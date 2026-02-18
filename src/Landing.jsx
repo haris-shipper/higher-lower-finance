@@ -81,27 +81,28 @@ export default function Landing({ onPlay, username }) {
       {/* MAIN — stacked logos */}
       <div className="land-main scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 48, padding: "40px 20px" }}>
 
-        <div className="logo-hl" style={{ maxWidth: 520, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("finance")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("finance")}>
+        {/* maxWidth = viewBoxWidth × (520/459) so every logo renders at the same pixel height */}
+        <div className="logo-hl" style={{ maxWidth: 520, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("finance")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("finance")}>
           <PixelDisplay color="#FF972D" isHovered={hovered === "finance"} text="HIGHER OR LOWER?" shape="square" />
         </div>
 
-        <div className="logo-cn" style={{ maxWidth: 360, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("connections")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("connections")}>
+        <div className="logo-cn" style={{ maxWidth: 355, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("connections")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("connections")}>
           <PixelDisplay color="#2DDEA0" isHovered={hovered === "connections"} text="CONNECTIONS" shape="dot" />
         </div>
 
-        <div className="logo-ib" style={{ maxWidth: 200, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("inbox")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("inbox")}>
+        <div className="logo-ib" style={{ maxWidth: 159, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("inbox")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("inbox")}>
           <PixelDisplay color="#EC49D3" isHovered={hovered === "inbox"} text="INBOX" shape="triangle" />
         </div>
 
-        <div className="logo-im" style={{ maxWidth: 340, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("impostor")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("impostor")}>
+        <div className="logo-im" style={{ maxWidth: 257, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("impostor")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("impostor")}>
           <PixelDisplay color="#48D7FF" isHovered={hovered === "impostor"} text="IMPOSTOR" shape="decagon" />
         </div>
 
-        <div className="logo-ds" style={{ maxWidth: 240, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("dossier")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("dossier")}>
+        <div className="logo-ds" style={{ maxWidth: 224, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("dossier")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("dossier")}>
           <PixelDisplay color="#BC34FB" isHovered={hovered === "dossier"} text="DOSSIER" shape="square" />
         </div>
 
-        <div className="logo-fc" style={{ maxWidth: 200, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("faces")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("faces")}>
+        <div className="logo-fc" style={{ maxWidth: 159, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("faces")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("faces")}>
           <PixelDisplay color="#FF2C2F" isHovered={hovered === "faces"} text="FACES" shape="square" />
         </div>
 

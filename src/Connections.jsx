@@ -36,6 +36,7 @@ export default function Connections({ onBack }) {
   const [lives, setLives] = useState(4);
   const [shake, setShake] = useState(false);
   const [wrongFlash, setWrongFlash] = useState(false);
+  const [almostRight, setAlmostRight] = useState(false);
   const [roundResults, setRoundResults] = useState([]);
   const [, setTick] = useState(0);
   const tmr = useRef(null);
@@ -84,6 +85,12 @@ export default function Connections({ onBack }) {
         }, 400);
       }
     } else {
+      const counts = {};
+      for (const g of groupIdxs) counts[g] = (counts[g] || 0) + 1;
+      if (Math.max(...Object.values(counts)) === 3) {
+        setAlmostRight(true);
+        setTimeout(() => setAlmostRight(false), 1800);
+      }
       const newLives = lives - 1;
       setLives(newLives);
       setShake(true);
@@ -231,8 +238,15 @@ export default function Connections({ onBack }) {
               })}
             </div>
 
+            {/* Almost right toast */}
+            {almostRight && (
+              <div style={{ textAlign: "center", fontSize: 10, letterSpacing: 5, padding: "8px 0", marginTop: 6, color: C, animation: "revealIn 0.2s ease" }}>
+                ─ ONE AWAY ─
+              </div>
+            )}
+
             {/* Controls */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 6, marginTop: 6 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 6, marginTop: almostRight ? 0 : 6 }}>
               <button className="cb" onClick={() => setSelected(new Set())} disabled={selected.size === 0} style={{ fontSize: 10, letterSpacing: 4, padding: "11px 0" }}>CLEAR</button>
               <button className="cb" onClick={submit} disabled={selected.size !== 4} style={{ fontSize: 10, letterSpacing: 6, padding: "11px 0" }}>SUBMIT</button>
             </div>

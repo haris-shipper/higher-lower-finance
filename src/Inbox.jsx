@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import PixelDisplay from "./PixelDisplay.jsx";
 import { MESSAGES, TIER_TIME, BUCKETS } from "./inboxData.js";
+import { submitScore } from "./supabase.js";
 
 const BG = "#141413";
 const C = "#EC49D3";
@@ -43,7 +44,7 @@ function HighlightText({ text, signals, color }) {
   return <>{parts}</>;
 }
 
-export default function Inbox({ onBack }) {
+export default function Inbox({ onBack, username }) {
   const [phase, setPhase] = useState("menu");   // menu | playing | dead | debrief
   const [msgIdx, setMsgIdx] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
@@ -59,6 +60,7 @@ export default function Inbox({ onBack }) {
 
   // Refs hold volatile values safe to read in callbacks without stale closures
   const R = useRef({ messages: [], idx: 0, phase: "menu", tl: 15, ml: 15, streak: 0, mult: 1 });
+  const scoreSubmitted = useRef(false);
 
   useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
 
@@ -82,7 +84,14 @@ export default function Inbox({ onBack }) {
     return () => clearTimeout(id);
   }, [phase, timeLeft]);
 
+  useEffect(() => {
+    if ((phase !== "dead" && phase !== "debrief") || scoreSubmitted.current) return;
+    scoreSubmitted.current = true;
+    if (username) submitScore(username, "inbox", score);
+  }, [phase, score, username]);
+
   const startSession = useCallback(() => {
+    scoreSubmitted.current = false;
     const ordered = [
       ...shuf(MESSAGES.filter(m => m.tier === 1)),
       ...shuf(MESSAGES.filter(m => m.tier === 2)),
@@ -189,7 +198,7 @@ export default function Inbox({ onBack }) {
             <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+        <div style={{ fontSize: 10, letterSpacing: 4 }}>QUARTR LABS GAME STUDIO</div>
         <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
           {[
             { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },

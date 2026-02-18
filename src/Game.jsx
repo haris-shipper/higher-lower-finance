@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import PixelDisplay from "./PixelDisplay.jsx";
+import { submitScore } from "./supabase.js";
 
 const QS = [
   { a: { l: "SaaS EBITDA Margin", v: 25, u: "%" }, b: { l: "Oil & Gas EBITDA Margin", v: 45, u: "%" }, c: "MARGINS",
@@ -94,7 +95,7 @@ const isMktOpen = (tz, oh, om, ch, cm) => {
   return mins >= oh * 60 + om && mins < ch * 60 + cm;
 };
 
-export default function Game({ onBack }) {
+export default function Game({ onBack, username }) {
   const [ph, setPh] = useState("menu");
   const [qs, setQs] = useState([]);
   const [i, setI] = useState(0);
@@ -110,10 +111,20 @@ export default function Game({ onBack }) {
   const [showExp, setShowExp] = useState(false);
   const [tick, setTick] = useState(0);
   const tmr = useRef(null);
+  const scoreSubmitted = useRef(false);
 
   useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
 
+  // Submit score when game ends
+  useEffect(() => {
+    if (ph === "end" && !scoreSubmitted.current) {
+      scoreSubmitted.current = true;
+      submitScore(username, "finance", sc);
+    }
+  }, [ph, sc, username]);
+
   const start = useCallback(() => {
+    scoreSubmitted.current = false;
     setQs(shuf(QS).slice(0, 20).map(q => Math.random() > 0.5 ? { ...q, a: q.b, b: q.a } : q));
     setI(0); setSc(0); setSt(0); setCmb(1); setRes(null); setShowExp(false); setPh("play");
   }, []);
@@ -169,7 +180,7 @@ export default function Game({ onBack }) {
             <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+        <div style={{ fontSize: 10, letterSpacing: 4 }}>QUARTR LABS GAME STUDIO</div>
         <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
           {[
             { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },

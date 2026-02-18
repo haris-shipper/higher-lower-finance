@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import PixelDisplay from "./PixelDisplay.jsx";
 import { ZONES } from "./connectionsData.js";
+import { submitScore } from "./supabase.js";
 
 const BG = "#141413";
 const C = "#2DDEA0";
@@ -26,7 +27,7 @@ function buildTiles(round) {
   ).map((tile, id) => ({ ...tile, id }));
 }
 
-export default function Connections({ onBack }) {
+export default function Connections({ onBack, username }) {
   const [phase, setPhase] = useState("menu");
   const [session, setSession] = useState(null);
   const [roundIdx, setRoundIdx] = useState(0);
@@ -40,11 +41,13 @@ export default function Connections({ onBack }) {
   const [roundResults, setRoundResults] = useState([]);
   const [, setTick] = useState(0);
   const tmr = useRef(null);
+  const scoreSubmitted = useRef(false);
 
   useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
   useEffect(() => () => { if (tmr.current) clearTimeout(tmr.current); }, []);
 
   const startSession = useCallback(() => {
+    scoreSubmitted.current = false;
     const rounds = ZONES.map(zone => zone[Math.floor(Math.random() * zone.length)]);
     const firstTiles = buildTiles(rounds[0]);
     setSession(rounds);
@@ -105,6 +108,13 @@ export default function Connections({ onBack }) {
     }
   }, [selected, phase, tiles, revealed, lives]);
 
+  useEffect(() => {
+    if (phase !== "end" || scoreSubmitted.current) return;
+    scoreSubmitted.current = true;
+    const finalScore = roundResults.filter(r => r.won).length * 250;
+    if (username) submitScore(username, "connections", finalScore);
+  }, [phase, roundResults, username]);
+
   const nextRound = useCallback(() => {
     const nextIdx = roundIdx + 1;
     if (nextIdx >= 4) {
@@ -144,7 +154,7 @@ export default function Connections({ onBack }) {
             <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+        <div style={{ fontSize: 10, letterSpacing: 4 }}>QUARTR LABS GAME STUDIO</div>
         <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
           {[
             { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },

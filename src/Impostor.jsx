@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import PixelDisplay from "./PixelDisplay.jsx";
 import { ROUNDS } from "./impostorData.js";
+import { submitScore } from "./supabase.js";
 
 const BG = "#141413";
 const C = "#48D7FF";
@@ -44,7 +45,7 @@ function HighlightTerm({ text, term, color }) {
   );
 }
 
-export default function Impostor({ onBack }) {
+export default function Impostor({ onBack, username }) {
   const [phase, setPhase] = useState("menu");
   const [rounds, setRounds] = useState([]);
   const [roundIdx, setRoundIdx] = useState(0);
@@ -58,6 +59,7 @@ export default function Impostor({ onBack }) {
   const [history, setHistory] = useState([]);           // { round, sentenceOrder, selectedDisplayIdx, correct }
   const [, setTick] = useState(0);
   const tmr = useRef(null);
+  const scoreSubmitted = useRef(false);
 
   useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
   useEffect(() => () => { if (tmr.current) clearTimeout(tmr.current); }, []);
@@ -66,7 +68,14 @@ export default function Impostor({ onBack }) {
   const t = getTier(streak);
   const ac = t.color;
 
+  useEffect(() => {
+    if ((phase !== "dead" && phase !== "debrief") || scoreSubmitted.current) return;
+    scoreSubmitted.current = true;
+    if (username) submitScore(username, "impostor", score);
+  }, [phase, score, username]);
+
   function startGame() {
+    scoreSubmitted.current = false;
     const pool = shuf([...ROUNDS]).slice(0, 40);
     setRounds(pool);
     setRoundIdx(0);
@@ -137,7 +146,7 @@ export default function Impostor({ onBack }) {
               <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
-          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>QUARTR LABS GAME STUDIO</div>
           <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
@@ -202,7 +211,7 @@ export default function Impostor({ onBack }) {
               <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
-          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>QUARTR LABS GAME STUDIO</div>
           <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
@@ -326,7 +335,7 @@ export default function Impostor({ onBack }) {
               <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
-          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>QUARTR LABS GAME STUDIO</div>
           <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
@@ -432,7 +441,7 @@ export default function Impostor({ onBack }) {
               <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
-          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>QUARTR LABS GAME STUDIO</div>
           <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },

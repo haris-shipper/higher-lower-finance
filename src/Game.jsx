@@ -54,6 +54,59 @@ const TIERS = [
 ];
 function getTier(s) { let t = TIERS[0]; for (const c of TIERS) if (s >= c.min) t = c; return t; }
 
+const FONT = {
+  H: [[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  I: [[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[1,1,1,1,1]],
+  G: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,0],[1,0,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  E: [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+  R: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,1,0,0],[1,0,0,1,0],[1,0,0,0,1]],
+  O: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  L: [[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+  W: [[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,1,0,1],[1,1,0,1,1],[1,0,0,0,1]],
+  '?': [[0,1,1,1,0],[1,0,0,0,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,0,0,0,0],[0,0,1,0,0]],
+  ' ': [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],
+};
+const _PX_TEXT = "HIGHER OR LOWER?";
+const _PS = 4, _PG = 1, _LG = 5;
+const _buildPx = () => {
+  const pxs = [], cw = 5 * _PS + 4 * _PG; let xOff = 0;
+  for (let ci = 0; ci < _PX_TEXT.length; ci++) {
+    const grid = FONT[_PX_TEXT[ci]] || FONT[' '];
+    for (let r = 0; r < 7; r++)
+      for (let c = 0; c < 5; c++)
+        if (grid[r][c]) pxs.push({ key: `${ci}-${r}-${c}`, x: xOff + c * (_PS + _PG), y: r * (_PS + _PG) });
+    xOff += cw + _LG;
+  }
+  return { pxs, w: xOff - _LG, h: 7 * _PS + 6 * _PG };
+};
+const { pxs: PX_PIXELS, w: PX_W, h: PX_H } = _buildPx();
+
+function PixelDisplay({ color }) {
+  const [dim, setDim] = useState(() => new Set());
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setDim(prev => {
+        const next = new Set(prev);
+        const n = Math.floor(Math.random() * 3) + 1;
+        for (let i = 0; i < n; i++) {
+          const px = PX_PIXELS[Math.floor(Math.random() * PX_PIXELS.length)];
+          next.has(px.key) ? next.delete(px.key) : next.add(px.key);
+        }
+        return next;
+      });
+    }, 180);
+    return () => clearInterval(iv);
+  }, []);
+  return (
+    <svg viewBox={`0 0 ${PX_W} ${PX_H}`} style={{ width: "100%", display: "block", marginBottom: 28 }}>
+      {PX_PIXELS.map(({ key, x, y }) => (
+        <rect key={key} x={x} y={y} width={_PS} height={_PS} fill={color}
+          opacity={dim.has(key) ? 0.07 : 1} style={{ transition: "opacity 0.55s ease" }} />
+      ))}
+    </svg>
+  );
+}
+
 export default function Game() {
   const [ph, setPh] = useState("menu");
   const [qs, setQs] = useState([]);
@@ -151,14 +204,7 @@ export default function Game() {
         {/* ── MENU ── */}
         {ph === "menu" && (
           <div style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
-            <div style={{ width: 160, height: 160, border: `1px solid ${C}`, borderRadius: "50%", margin: "0 auto 28px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-              <div style={{ width: 100, height: 100, border: `1px solid ${C}`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
-                <div style={{ fontSize: 24, fontWeight: 700, letterSpacing: 2 }}>H/L</div>
-                <div style={{ fontSize: 8, letterSpacing: 4 }}>FINANCE</div>
-              </div>
-              <div style={{ position: "absolute", top: "50%", left: 0, right: 0, height: 1, background: C }} />
-              <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: C }} />
-            </div>
+            <PixelDisplay color={C} />
 
             <div style={{ border: `1px solid ${C}`, padding: "16px 20px", marginBottom: 20, textAlign: "left" }}>
               <div style={{ fontSize: 10, letterSpacing: 4, marginBottom: 10 }}>─ BRIEFING ─</div>

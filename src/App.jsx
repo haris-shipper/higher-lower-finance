@@ -19,18 +19,53 @@ export default function App() {
     fetchAllScores().then(scores => setTopPlayer(topOverallPlayer(scores)));
   }, []);
 
-  function handleIntroComplete(name) {
-    setUsername(name);
-    setView("landing");
+  // Stamp the initial view into history so popstate always has a state object
+  useEffect(() => {
+    window.history.replaceState({ view }, "");
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Browser back button / mobile swipe-back / trackpad swipe
+  useEffect(() => {
+    const onPop = (e) => {
+      const v = e.state?.view;
+      if (v) setView(v);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  // Backspace key → browser back (skip when typing in an input)
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== "Backspace") return;
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || document.activeElement?.isContentEditable) return;
+      e.preventDefault();
+      window.history.back();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Navigate forward — push a real history entry
+  function navigate(newView) {
+    window.history.pushState({ view: newView }, "");
+    setView(newView);
   }
 
-  const sharedProps = { topPlayer, onLeaderboard: () => setView("leaderboard") };
+  function handleIntroComplete(name) {
+    setUsername(name);
+    navigate("landing");
+  }
+
+  const sharedProps = { topPlayer, onLeaderboard: () => navigate("leaderboard") };
+  const goLanding   = () => navigate("landing");
 
   if (view === "intro")        return <Intro onComplete={handleIntroComplete} />;
-  if (view === "finance")      return <Game        onBack={() => setView("landing")} username={username} {...sharedProps} />;
-  if (view === "connections")  return <Connections onBack={() => setView("landing")} username={username} {...sharedProps} />;
-  if (view === "inbox")        return <Inbox       onBack={() => setView("landing")} username={username} {...sharedProps} />;
-  if (view === "impostor")     return <Impostor    onBack={() => setView("landing")} username={username} {...sharedProps} />;
-  if (view === "leaderboard")  return <Leaderboard onBack={() => setView("landing")} username={username} topPlayer={topPlayer} />;
-  return <Landing onPlay={(game) => setView(game)} username={username} />;
+  if (view === "finance")      return <Game        onBack={goLanding} username={username} {...sharedProps} />;
+  if (view === "connections")  return <Connections onBack={goLanding} username={username} {...sharedProps} />;
+  if (view === "inbox")        return <Inbox       onBack={goLanding} username={username} {...sharedProps} />;
+  if (view === "impostor")     return <Impostor    onBack={goLanding} username={username} {...sharedProps} />;
+  if (view === "leaderboard")  return <Leaderboard onBack={goLanding} username={username} topPlayer={topPlayer} />;
+  return <Landing onPlay={(game) => navigate(game)} username={username} />;
 }

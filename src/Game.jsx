@@ -81,6 +81,15 @@ const _buildPx = () => {
 };
 const { pxs: PX_PIXELS, w: PX_W, h: PX_H } = _buildPx();
 
+const getTZTime = (tz) => new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+const isMktOpen = (tz, oh, om, ch, cm) => {
+  const local = new Date(new Date().toLocaleString("en-US", { timeZone: tz }));
+  const day = local.getDay();
+  if (day === 0 || day === 6) return false;
+  const mins = local.getHours() * 60 + local.getMinutes();
+  return mins >= oh * 60 + om && mins < ch * 60 + cm;
+};
+
 function PixelDisplay({ color }) {
   const [dim, setDim] = useState(() => new Set());
   useEffect(() => {
@@ -120,10 +129,10 @@ export default function Game() {
   const [shake, setShake] = useState(false);
   const [pts, setPts] = useState(0);
   const [stmp, setStmp] = useState(null);
-  const [time, setTime] = useState("");
+  const [tick, setTick] = useState(0);
   const tmr = useRef(null);
 
-  useEffect(() => { const t = () => setTime(new Date().toTimeString().split(" ")[0]); t(); const iv = setInterval(t, 1000); return () => clearInterval(iv); }, []);
+  useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
 
   const start = useCallback(() => {
     setQs(shuf(QS).slice(0, 20).map(q => Math.random() > 0.5 ? { ...q, a: q.b, b: q.a } : q));
@@ -168,23 +177,41 @@ export default function Game() {
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
         @keyframes stampIn{0%{opacity:0;transform:translate(-50%,-50%) scale(5)}30%{opacity:1;transform:translate(-50%,-50%) scale(0.95)}100%{transform:translate(-50%,-50%) scale(1)}}
         @keyframes stampOut{from{opacity:1}to{opacity:0;transform:translate(-50%,-50%) scale(0.85) translateY(-10px)}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
         .gb{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:0.15em;padding:16px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
         .gb:hover{background:${C};color:${BG};}
         .gb:active{transform:scale(0.96);}
       `}</style>
 
       {/* ═══ TOP BAR ═══ */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0 }}>
-        <div style={{ fontSize: 10, letterSpacing: 3 }}>
-          <div>EARTH TIME:</div>
-          <div>{time}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "10px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0 }}>
+        <div style={{ fontSize: 9, letterSpacing: 2, lineHeight: 2 }}>
+          {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+            <div key={label} style={{ display: "flex", gap: 10 }}>
+              <span style={{ minWidth: 72 }}>{label}</span>
+              <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span>
+            </div>
+          ))}
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 6, textAlign: "center" }}>
-          ||||||||&ensp;HIGHER&ensp;LOWER&ensp;||||||||
+        <div style={{ fontSize: 10, letterSpacing: 4, textAlign: "center", alignSelf: "center" }}>
+          A QUARTR LABS GAME
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 3, textAlign: "right" }}>
-          <div>EARTH TIME:</div>
-          <div>{time}</div>
+        <div style={{ fontSize: 9, letterSpacing: 2, textAlign: "right", lineHeight: 2 }}>
+          {[
+            { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
+            { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
+            { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
+          ].map(({ label, tz, oh, om, ch, cm }) => {
+            const open = isMktOpen(tz, oh, om, ch, cm);
+            return (
+              <div key={label} style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <span>{label}</span>
+                <span style={{ color: open ? "#2DFF72" : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none", minWidth: 50, textAlign: "right" }}>
+                  {open ? "OPEN" : "CLOSED"}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 

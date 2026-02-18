@@ -15,8 +15,7 @@ const isMktOpen = (tz, oh, om, ch, cm) => {
 };
 
 export default function Landing({ onPlay }) {
-  const [hovered, setHovered] = useState(false);
-  // tick forces re-render every second so clocks and market status stay live
+  const [hovered, setHovered] = useState(null); // 'finance' | 'connections' | null
   const [, setTick] = useState(0);
   useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
 
@@ -50,22 +49,35 @@ export default function Landing({ onPlay }) {
         </div>
       </div>
 
-      {/* MAIN */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
+      {/* MAIN — stacked logos, each full-width within a max container */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 48, padding: "40px 20px" }}>
+
+        {/* Higher or Lower */}
         <div
-          style={{ maxWidth: 560, width: "100%", cursor: "pointer" }}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
+          style={{ maxWidth: 520, width: "100%", cursor: "pointer" }}
+          onMouseEnter={() => setHovered("finance")}
+          onMouseLeave={() => setHovered(null)}
           onClick={() => onPlay("finance")}
         >
-          <PixelDisplay color={C} isHovered={hovered} />
+          <PixelDisplay color="#FF972D" isHovered={hovered === "finance"} text="HIGHER OR LOWER?" shape="square" />
         </div>
+
+        {/* Connections */}
+        <div
+          style={{ maxWidth: 360, width: "100%", cursor: "pointer" }}
+          onMouseEnter={() => setHovered("connections")}
+          onMouseLeave={() => setHovered(null)}
+          onClick={() => onPlay("connections")}
+        >
+          <PixelDisplay color="#2DDEA0" isHovered={hovered === "connections"} text="CONNECTIONS" shape="dot" />
+        </div>
+
       </div>
 
       {/* BOTTOM BAR */}
       <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
         <span>QUARTR</span>
-        <span>HIGHER/LOWER V1.0</span>
+        <span>QUARTR LABS GAMES</span>
         <span>○ SELECT GAME</span>
       </div>
     </div>

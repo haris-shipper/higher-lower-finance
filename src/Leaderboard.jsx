@@ -12,6 +12,7 @@ const GAMES = [
   { key: "connections", label: "CONNECTIONS"      },
   { key: "inbox",       label: "INBOX"            },
   { key: "impostor",    label: "IMPOSTOR"         },
+  { key: "faces",       label: "FACES"            },
 ];
 
 const getTZTime = (tz) => new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });

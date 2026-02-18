@@ -45,7 +45,7 @@ function HighlightTerm({ text, term, color }) {
   );
 }
 
-export default function Impostor({ onBack, username }) {
+export default function Impostor({ onBack, username, topPlayer, onLeaderboard }) {
   const [phase, setPhase] = useState("menu");
   const [rounds, setRounds] = useState([]);
   const [roundIdx, setRoundIdx] = useState(0);
@@ -141,20 +141,28 @@ export default function Impostor({ onBack, username }) {
           .xb:active{transform:scale(0.96);}
         `}</style>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
-            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
-              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
+            <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
+            <span style={{ opacity: 0.25 }}>|</span>
+            {[["STO", "Europe/Stockholm"], ["DUB", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
           <div style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
+            {topPlayer && (
+              <>
+                <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
+                <span style={{ opacity: 0.25 }}>|</span>
+              </>
+            )}
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
               { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
               { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
             ].map(({ label, tz, oh, om, ch, cm }) => {
               const open = isMktOpen(tz, oh, om, ch, cm);
-              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
+              return <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
             })}
           </div>
         </div>
@@ -206,20 +214,28 @@ export default function Impostor({ onBack, username }) {
         `}</style>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
-            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
-              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
+            <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
+            <span style={{ opacity: 0.25 }}>|</span>
+            {[["STO", "Europe/Stockholm"], ["DUB", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
           <div style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
+            {topPlayer && (
+              <>
+                <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
+                <span style={{ opacity: 0.25 }}>|</span>
+              </>
+            )}
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
               { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
               { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
             ].map(({ label, tz, oh, om, ch, cm }) => {
               const open = isMktOpen(tz, oh, om, ch, cm);
-              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
+              return <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
             })}
           </div>
         </div>
@@ -330,20 +346,28 @@ export default function Impostor({ onBack, username }) {
         `}</style>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
-            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
-              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
+            <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
+            <span style={{ opacity: 0.25 }}>|</span>
+            {[["STO", "Europe/Stockholm"], ["DUB", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
           <div style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
+            {topPlayer && (
+              <>
+                <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
+                <span style={{ opacity: 0.25 }}>|</span>
+              </>
+            )}
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
               { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
               { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
             ].map(({ label, tz, oh, om, ch, cm }) => {
               const open = isMktOpen(tz, oh, om, ch, cm);
-              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
+              return <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
             })}
           </div>
         </div>
@@ -436,20 +460,28 @@ export default function Impostor({ onBack, username }) {
         `}</style>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
-            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
-              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
+            <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
+            <span style={{ opacity: 0.25 }}>|</span>
+            {[["STO", "Europe/Stockholm"], ["DUB", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
             ))}
           </div>
           <div style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
-          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
+            {topPlayer && (
+              <>
+                <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
+                <span style={{ opacity: 0.25 }}>|</span>
+              </>
+            )}
             {[
               { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
               { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
               { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
             ].map(({ label, tz, oh, om, ch, cm }) => {
               const open = isMktOpen(tz, oh, om, ch, cm);
-              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
+              return <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
             })}
           </div>
         </div>

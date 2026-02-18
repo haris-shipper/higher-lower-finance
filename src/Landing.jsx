@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import PixelDisplay from "./PixelDisplay.jsx";
 
 const BG = "#141413";
-const C = "#FF972D";
+const C = "#FBFBFB";
 const ERR = "#FF2D2D";
 
 const getTZTime = (tz) => new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });

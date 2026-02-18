@@ -13,6 +13,8 @@ const FONT = {
   N: [[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
   T: [[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0]],
   S: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,0],[0,1,1,1,0],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  M: [[1,0,0,0,1],[1,1,0,1,1],[1,0,1,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  P: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0]],
   B: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0]],
   X: [[1,0,0,0,1],[0,1,0,1,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,1,0,1,0],[1,0,0,0,1]],
   '?': [[0,1,1,1,0],[1,0,0,0,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,0,0,0,0],[0,0,1,0,0]],
@@ -67,6 +69,11 @@ export default function PixelDisplay({ color, isHovered, style, text, shape = "s
           return <circle key={key} cx={x + PS / 2} cy={y + PS / 2} r={PS / 2} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
         if (shape === "triangle")
           return <polygon key={key} points={`${x + PS / 2},${y} ${x},${y + PS} ${x + PS},${y + PS}`} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
+        if (shape === "decagon") {
+          const cx = x + PS / 2, cy = y + PS / 2, r = PS / 2;
+          const pts = Array.from({ length: 10 }, (_, k) => { const a = -Math.PI / 2 + k * (2 * Math.PI / 10); return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`; }).join(" ");
+          return <polygon key={key} points={pts} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
+        }
         return <rect key={key} x={x} y={y} width={PS} height={PS} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
       })}
     </svg>

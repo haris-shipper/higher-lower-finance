@@ -15,7 +15,7 @@ const isMktOpen = (tz, oh, om, ch, cm) => {
 };
 
 export default function Landing({ onPlay }) {
-  const [hovered, setHovered] = useState(null); // 'finance' | 'connections' | null
+  const [hovered, setHovered] = useState(null); // 'finance' | 'connections' | 'inbox' | 'impostor' | null
   const [, setTick] = useState(0);
   useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
 
@@ -80,6 +80,16 @@ export default function Landing({ onPlay }) {
           onClick={() => onPlay("inbox")}
         >
           <PixelDisplay color="#EC49D3" isHovered={hovered === "inbox"} text="INBOX" shape="triangle" />
+        </div>
+
+        {/* Impostor */}
+        <div
+          style={{ maxWidth: 340, width: "100%", cursor: "pointer" }}
+          onMouseEnter={() => setHovered("impostor")}
+          onMouseLeave={() => setHovered(null)}
+          onClick={() => onPlay("impostor")}
+        >
+          <PixelDisplay color="#48D7FF" isHovered={hovered === "impostor"} text="IMPOSTOR" shape="decagon" />
         </div>
 
       </div>

@@ -3,8 +3,7 @@ import PixelDisplay from "./PixelDisplay.jsx";
 import { CARDS, CATEGORIES, SOURCES } from "./dossierData.js";
 
 const BG = "#1F1F1F";
-const C  = "#AF02FF";
-const DIM = "rgba(175,2,255,0.4)";
+const C  = "#BC34FB";
 
 function shuf(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 
@@ -17,16 +16,34 @@ const isMktOpen = (tz, oh, om, ch, cm) => {
   return mins >= oh * 60 + om && mins < ch * 60 + cm;
 };
 
+const SHARED_STYLE = `
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
+  @keyframes revealIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes cardIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes flipReveal{from{opacity:0;transform:rotateX(60deg)}to{opacity:1;transform:rotateX(0)}}
+  .xb{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.15em;padding:16px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;width:100%;}
+  .xb:hover{background:${C};color:${BG};}
+  .xb:active{transform:scale(0.97);}
+  .xb:disabled{opacity:0.3;cursor:default;}
+  .xbs{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.12em;padding:14px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
+  .xbs:hover{background:${C};color:${BG};}
+  .xbs:active{transform:scale(0.97);}
+  .ftab{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.12em;padding:7px 11px;background:transparent;border:1px solid ${C}40;color:${C};opacity:0.45;cursor:pointer;transition:all 0.12s;}
+  .ftab:hover{border-color:${C};opacity:0.8;}
+  .ftab.on{background:${C};color:${BG};border-color:${C};opacity:1;}
+`;
+
 export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) {
-  const [phase,       setPhase]       = useState("menu");
-  const [catFilter,   setCatFilter]   = useState("all");
-  const [srcFilter,   setSrcFilter]   = useState("all");
-  const [deck,        setDeck]        = useState([]);   // active queue
-  const [flipped,     setFlipped]     = useState(false);
-  const [animKey,     setAnimKey]     = useState(0);
-  const [flipAnim,    setFlipAnim]    = useState(false);
-  const [stats,       setStats]       = useState({ known: 0, unsure: 0, noclue: 0, reviewed: 0, noclueByCategory: {} });
-  const [, setTick]   = useState(0);
+  const [phase,     setPhase]     = useState("menu");
+  const [catFilter, setCatFilter] = useState("all");
+  const [srcFilter, setSrcFilter] = useState("all");
+  const [deck,      setDeck]      = useState([]);
+  const [flipped,   setFlipped]   = useState(false);
+  const [animKey,   setAnimKey]   = useState(0);
+  const [stats,     setStats]     = useState({ known: 0, unsure: 0, noclue: 0, reviewed: 0, noclueByCategory: {} });
+  const [, setTick] = useState(0);
 
   useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
 
@@ -47,15 +64,6 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     setPhase("playing");
   }
 
-  function flipCard() {
-    if (flipped) return;
-    setFlipAnim(true);
-    setTimeout(() => {
-      setFlipped(true);
-      setFlipAnim(false);
-    }, 180);
-  }
-
   const rate = useCallback((rating) => {
     if (!flipped) return;
     const card = deck[0];
@@ -65,9 +73,9 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
       const nbc = { ...s.noclueByCategory };
       if (rating === "noclue") nbc[card.category] = (nbc[card.category] || 0) + 1;
       return {
-        known:   s.known   + (rating === "known"  ? 1 : 0),
-        unsure:  s.unsure  + (rating === "unsure" ? 1 : 0),
-        noclue:  s.noclue  + (rating === "noclue" ? 1 : 0),
+        known:    s.known  + (rating === "known"  ? 1 : 0),
+        unsure:   s.unsure + (rating === "unsure" ? 1 : 0),
+        noclue:   s.noclue + (rating === "noclue" ? 1 : 0),
         reviewed: s.reviewed + 1,
         noclueByCategory: nbc,
       };
@@ -77,10 +85,10 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     if (rating === "known") {
       newDeck = rest;
     } else {
-      const insertAfter = rating === "unsure"
-        ? 5 + Math.floor(Math.random() * 4)   // 5-8
-        : 2 + Math.floor(Math.random() * 2);  // 2-3
-      const pos = Math.min(insertAfter, rest.length);
+      const after = rating === "unsure"
+        ? 5 + Math.floor(Math.random() * 4)
+        : 2 + Math.floor(Math.random() * 2);
+      const pos = Math.min(after, rest.length);
       newDeck = [...rest.slice(0, pos), card, ...rest.slice(pos)];
     }
 
@@ -93,7 +101,6 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     }
   }, [flipped, deck]);
 
-  // Top bar — shared across all phases
   function TopBar() {
     return (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
@@ -101,7 +108,7 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
           <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
           <span style={{ opacity: 0.25 }}>|</span>
           {[["STO","Europe/Stockholm"],["DUB","Europe/Dublin"],["NYC","America/New_York"]].map(([label, tz]) => (
-            <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings:"'tnum'" }}>{getTZTime(tz)}</span></span>
+            <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
         <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
@@ -113,9 +120,9 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
             </>
           )}
           {[
-            { label:"NASDAQ", tz:"America/New_York", oh:9,  om:30, ch:16, cm:0  },
-            { label:"LSE",    tz:"Europe/London",    oh:8,  om:0,  ch:16, cm:30 },
-            { label:"STO",    tz:"Europe/Stockholm", oh:9,  om:0,  ch:17, cm:30 },
+            { label: "NASDAQ", tz: "America/New_York", oh: 9,  om: 30, ch: 16, cm: 0  },
+            { label: "LSE",    tz: "Europe/London",    oh: 8,  om: 0,  ch: 16, cm: 30 },
+            { label: "STO",    tz: "Europe/Stockholm", oh: 9,  om: 0,  ch: 17, cm: 30 },
           ].map(({ label, tz, oh, om, ch, cm }) => {
             const open = isMktOpen(tz, oh, om, ch, cm);
             return <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ color: open ? "#2DFF72" : "#FF2D2D", animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
@@ -135,62 +142,51 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     );
   }
 
-  // ── MENU ────────────────────────────────────────────────────────────────────
+  // ── MENU ──────────────────────────────────────────────────────────────────
   if (phase === "menu") {
     return (
-      <div className="page-root" style={{ fontFamily:"'IBM Plex Mono',monospace", background:BG, color:C, minHeight:"100vh", display:"flex", flexDirection:"column", userSelect:"none" }}>
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
-          *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-          @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
-          @keyframes flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:0.4}94%{opacity:1}97%{opacity:0.7}98%{opacity:1}}
-          .db{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.15em;padding:7px 12px;background:transparent;border:1px solid ${C}30;color:${DIM};cursor:pointer;transition:all 0.12s;}
-          .db:hover{border-color:${C}80;color:${C};}
-          .db.active{background:${C};color:${BG};border-color:${C};}
-          .dstart{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.15em;padding:16px 0;width:100%;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
-          .dstart:hover{background:${C};color:${BG};}
-          .dstart:disabled{opacity:0.3;cursor:default;}
-        `}</style>
+      <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+        <style>{SHARED_STYLE}</style>
         <TopBar />
-        <div className="scroll-main" style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"32px 20px", overflowY:"auto" }}>
-          <div style={{ maxWidth:520, width:"100%" }}>
-            <div style={{ maxWidth:360, margin:"0 auto 32px" }}>
+        <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 20px", overflowY: "auto" }}>
+          <div style={{ maxWidth: 520, width: "100%" }}>
+
+            <div style={{ maxWidth: 280, margin: "0 auto 32px" }}>
               <PixelDisplay color={C} text="DOSSIER" shape="square" />
             </div>
 
-            <div style={{ fontSize:9, letterSpacing:5, marginBottom:12, opacity:0.5 }}>─ FILTER BY CATEGORY ─</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginBottom:20 }}>
+            <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 10, opacity: 0.5 }}>─ FILTER BY CATEGORY ─</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 20 }}>
               {CATEGORIES.map(cat => (
-                <button key={cat.key} className={`db${catFilter === cat.key ? " active" : ""}`} onClick={() => setCatFilter(cat.key)}>{cat.label}</button>
+                <button key={cat.key} className={`ftab${catFilter === cat.key ? " on" : ""}`} onClick={() => setCatFilter(cat.key)}>{cat.label}</button>
               ))}
             </div>
 
-            <div style={{ fontSize:9, letterSpacing:5, marginBottom:12, opacity:0.5 }}>─ FILTER BY SOURCE GAME ─</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginBottom:28 }}>
+            <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 10, opacity: 0.5 }}>─ FILTER BY SOURCE GAME ─</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 24 }}>
               {SOURCES.map(src => (
-                <button key={src.key} className={`db${srcFilter === src.key ? " active" : ""}`} onClick={() => setSrcFilter(src.key)}>{src.label}</button>
+                <button key={src.key} className={`ftab${srcFilter === src.key ? " on" : ""}`} onClick={() => setSrcFilter(src.key)}>{src.label}</button>
               ))}
             </div>
 
-            <div style={{ fontSize:9, letterSpacing:4, marginBottom:20, textAlign:"center", opacity:0.5 }}>
-              {filteredCount === 0
-                ? "─ NO CARDS MATCH ─"
-                : `─ ${filteredCount} CARD${filteredCount !== 1 ? "S" : ""} SELECTED ─`}
+            <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 20, textAlign: "center", opacity: 0.5 }}>
+              {filteredCount === 0 ? "─ NO CARDS MATCH ─" : `─ ${filteredCount} CARD${filteredCount !== 1 ? "S" : ""} SELECTED ─`}
             </div>
 
-            <button className="dstart" disabled={filteredCount === 0} onClick={startSession}>INITIATE SESSION</button>
+            <button className="xb" disabled={filteredCount === 0} onClick={startSession}>INITIATE SESSION</button>
 
-            <div style={{ marginTop:20, border:`1px solid ${C}20`, padding:"14px 16px" }}>
-              <div style={{ fontSize:9, letterSpacing:4, marginBottom:10, opacity:0.5 }}>─ HOW IT WORKS ─</div>
+            <div style={{ marginTop: 20, border: `1px solid ${C}`, padding: "16px 20px" }}>
+              <div style={{ fontSize: 10, letterSpacing: 4, marginBottom: 10 }}>─ BRIEFING ─</div>
               {[
                 "Tap the card to reveal the answer",
-                "KNEW IT → card removed from session",
-                "UNSURE  → resurfaces after 5-8 cards",
-                "NO CLUE → resurfaces after 2-3 cards",
+                "KNEW IT  →  card removed from session",
+                "UNSURE   →  resurfaces after 5-8 cards",
+                "NO CLUE  →  resurfaces after 2-3 cards",
                 "Session ends when all cards are mastered",
               ].map((txt, i) => (
-                <div key={i} style={{ fontSize:10, lineHeight:2.2, display:"flex", gap:10 }}>
-                  <span style={{ opacity:0.4 }}>{String(i+1).padStart(2,"0")}</span><span>{txt}</span>
+                <div key={i} style={{ fontSize: 11, lineHeight: 2.2, display: "flex", gap: 10 }}>
+                  <span style={{ opacity: 0.4 }}>{String(i + 1).padStart(2, "0")}</span>
+                  <span>{txt}</span>
                 </div>
               ))}
             </div>
@@ -201,100 +197,71 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     );
   }
 
-  // ── PLAYING ─────────────────────────────────────────────────────────────────
+  // ── PLAYING ────────────────────────────────────────────────────────────────
   if (phase === "playing") {
     const card = deck[0];
     const total = stats.known + deck.length;
     const masteredPct = total > 0 ? (stats.known / total) * 100 : 0;
 
     return (
-      <div className="page-root" style={{ fontFamily:"'IBM Plex Mono',monospace", background:BG, color:C, minHeight:"100vh", display:"flex", flexDirection:"column", userSelect:"none" }}>
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
-          *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-          @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
-          @keyframes cardIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-          @keyframes flipOut{from{opacity:1;transform:rotateX(0deg)}to{opacity:0;transform:rotateX(-70deg)}}
-          @keyframes flipReveal{from{opacity:0;transform:rotateX(70deg)}to{opacity:1;transform:rotateX(0deg)}}
-          .drate{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;padding:14px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
-          .drate:hover{background:${C};color:${BG};}
-          .drate:active{transform:scale(0.97);}
-        `}</style>
+      <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+        <style>{SHARED_STYLE}</style>
         <TopBar />
-        <div className="scroll-main" style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"20px 16px", overflowY:"auto" }}>
-          <div style={{ width:"100%", maxWidth:560 }}>
+        <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", overflowY: "auto" }}>
+          <div style={{ width: "100%", maxWidth: 560 }}>
 
-            {/* Counter + progress */}
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10, fontSize:9, letterSpacing:3 }}>
-              <span style={{ opacity:0.5 }}>MASTERED <span style={{ color:C, fontWeight:700, opacity:1 }}>{stats.known}</span></span>
-              <span style={{ opacity:0.5 }}>REMAINING <span style={{ color:C, fontWeight:700, opacity:1 }}>{deck.length}</span></span>
+            {/* Progress bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 9, letterSpacing: 3 }}>
+              <span style={{ opacity: 0.5 }}>MASTERED <span style={{ fontWeight: 700, opacity: 1 }}>{stats.known}</span></span>
+              <span style={{ opacity: 0.5 }}>REMAINING <span style={{ fontWeight: 700, opacity: 1 }}>{deck.length}</span></span>
             </div>
-            <div style={{ height:2, background:`${C}20`, marginBottom:20 }}>
-              <div style={{ height:"100%", width:`${masteredPct}%`, background:C, transition:"width 0.4s" }} />
+            <div style={{ height: 2, background: `${C}20`, marginBottom: 20 }}>
+              <div style={{ height: "100%", width: `${masteredPct}%`, background: C, transition: "width 0.4s" }} />
             </div>
 
             {/* Card */}
             <div
               key={animKey}
-              onClick={flipCard}
+              onClick={() => { if (!flipped) setFlipped(true); }}
               style={{
-                border:`1px solid ${C}`,
-                padding:"32px 24px",
-                minHeight:180,
+                border: `1px solid ${C}`,
+                padding: "28px 24px",
+                minHeight: 180,
                 cursor: flipped ? "default" : "pointer",
-                display:"flex",
-                flexDirection:"column",
-                justifyContent:"center",
-                alignItems:"center",
-                textAlign:"center",
-                marginBottom:16,
-                transition:"border-color 0.15s",
-                animation: flipAnim ? "flipOut 0.18s ease forwards" : `cardIn 0.2s ease`,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+                marginBottom: flipped ? 16 : 0,
+                animation: "cardIn 0.2s ease",
               }}
-              onMouseEnter={e => { if (!flipped) e.currentTarget.style.borderColor = `${C}80`; }}
+              onMouseEnter={e => { if (!flipped) e.currentTarget.style.borderColor = `${C}60`; }}
               onMouseLeave={e => { if (!flipped) e.currentTarget.style.borderColor = C; }}
             >
-              {/* Category tag */}
-              <div style={{ fontSize:8, letterSpacing:4, opacity:0.4, marginBottom:16 }}>
+              <div style={{ fontSize: 8, letterSpacing: 4, marginBottom: 16, opacity: 0.4 }}>
                 {card.category.toUpperCase()} · {card.source.toUpperCase()}
               </div>
 
               {!flipped ? (
-                <div style={{ animation:"cardIn 0.2s ease" }}>
-                  <div style={{ fontSize:14, lineHeight:1.9, letterSpacing:0.3, fontWeight:500 }}>{card.front}</div>
-                  <div style={{ fontSize:8, letterSpacing:3, marginTop:20, opacity:0.35 }}>TAP TO REVEAL</div>
-                </div>
+                <>
+                  <div style={{ fontSize: 14, lineHeight: 1.9, letterSpacing: 0.3, fontWeight: 500 }}>{card.front}</div>
+                  <div style={{ fontSize: 8, letterSpacing: 3, marginTop: 20, opacity: 0.35 }}>TAP TO REVEAL</div>
+                </>
               ) : (
-                <div style={{ animation:"flipReveal 0.2s ease" }}>
-                  <div style={{ fontSize:13, lineHeight:1.9, letterSpacing:0.3 }}>{card.back}</div>
+                <div style={{ animation: "flipReveal 0.2s ease" }}>
+                  <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 14, opacity: 0.5 }}>─ ANSWER ─</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.9, letterSpacing: 0.3 }}>{card.back}</div>
                 </div>
               )}
             </div>
 
-            {/* Rating buttons — only after flip */}
-            {flipped ? (
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6 }}>
-                <button className="drate" onClick={() => rate("noclue")} style={{ borderColor:"#FF2D2D", color:"#FF2D2D" }}
-                  onMouseEnter={e => { e.currentTarget.style.background="#FF2D2D"; e.currentTarget.style.color=BG; }}
-                  onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#FF2D2D"; }}>
-                  NO CLUE
-                </button>
-                <button className="drate" onClick={() => rate("unsure")} style={{ borderColor:`${C}80`, color:`${C}80` }}
-                  onMouseEnter={e => { e.currentTarget.style.background=C; e.currentTarget.style.color=BG; e.currentTarget.style.borderColor=C; }}
-                  onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color=`${C}80`; e.currentTarget.style.borderColor=`${C}80`; }}>
-                  UNSURE
-                </button>
-                <button className="drate" onClick={() => rate("known")} style={{ borderColor:"#2DFF72", color:"#2DFF72" }}
-                  onMouseEnter={e => { e.currentTarget.style.background="#2DFF72"; e.currentTarget.style.color=BG; }}
-                  onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.color="#2DFF72"; }}>
-                  KNEW IT
-                </button>
-              </div>
-            ) : (
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6, opacity:0.2, pointerEvents:"none" }}>
-                <div style={{ border:`1px solid ${C}`, padding:"14px 0", textAlign:"center", fontSize:10, letterSpacing:2 }}>NO CLUE</div>
-                <div style={{ border:`1px solid ${C}`, padding:"14px 0", textAlign:"center", fontSize:10, letterSpacing:2 }}>UNSURE</div>
-                <div style={{ border:`1px solid ${C}`, padding:"14px 0", textAlign:"center", fontSize:10, letterSpacing:2 }}>KNEW IT</div>
+            {/* Rating buttons — only visible after flip */}
+            {flipped && (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, animation: "revealIn 0.15s ease" }}>
+                <button className="xbs" onClick={() => rate("noclue")}>NO CLUE</button>
+                <button className="xbs" onClick={() => rate("unsure")}>UNSURE</button>
+                <button className="xbs" onClick={() => rate("known")}>KNEW IT</button>
               </div>
             )}
 
@@ -305,7 +272,7 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     );
   }
 
-  // ── END ─────────────────────────────────────────────────────────────────────
+  // ── END ────────────────────────────────────────────────────────────────────
   if (phase === "end") {
     const total = stats.reviewed;
     const pct   = total > 0 ? Math.round((stats.known / total) * 100) : 0;
@@ -314,68 +281,58 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
       .slice(0, 3);
 
     return (
-      <div className="page-root" style={{ fontFamily:"'IBM Plex Mono',monospace", background:BG, color:C, minHeight:"100vh", display:"flex", flexDirection:"column", userSelect:"none" }}>
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
-          *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-          @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
-          @keyframes revealIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-          .dend{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.15em;padding:14px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
-          .dend:hover{background:${C};color:${BG};}
-        `}</style>
+      <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+        <style>{SHARED_STYLE}</style>
         <TopBar />
-        <div className="scroll-main" style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", padding:"28px 16px", overflowY:"auto" }}>
-          <div style={{ width:"100%", maxWidth:520, animation:"revealIn 0.2s ease" }}>
+        <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "24px 16px", overflowY: "auto" }}>
+          <div style={{ width: "100%", maxWidth: 520, animation: "revealIn 0.2s ease" }}>
 
-            <div style={{ fontSize:10, letterSpacing:6, marginBottom:20, textAlign:"center" }}>─ SESSION COMPLETE ─</div>
+            <div style={{ fontSize: 10, letterSpacing: 6, marginBottom: 20, textAlign: "center" }}>─ SESSION COMPLETE ─</div>
 
-            {/* Big score */}
-            <div style={{ textAlign:"center", marginBottom:24 }}>
-              <div style={{ fontSize:64, fontWeight:700, letterSpacing:4, fontFeatureSettings:"'tnum'" }}>{pct}%</div>
-              <div style={{ fontSize:9, letterSpacing:5, opacity:0.5 }}>MASTERY RATE · {total} CARDS REVIEWED</div>
+            <div style={{ textAlign: "center", marginBottom: 24 }}>
+              <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: 4, fontFeatureSettings: "'tnum'" }}>{pct}%</div>
+              <div style={{ fontSize: 9, letterSpacing: 5, opacity: 0.5 }}>MASTERY RATE · {total} CARDS REVIEWED</div>
             </div>
 
             {/* Breakdown */}
-            <div style={{ border:`1px solid ${C}20`, marginBottom:20 }}>
+            <div style={{ border: `1px solid ${C}`, marginBottom: 20 }}>
               {[
-                { label:"KNEW IT",  value:stats.known,  color:"#2DFF72" },
-                { label:"UNSURE",   value:stats.unsure, color:C         },
-                { label:"NO CLUE",  value:stats.noclue, color:"#FF2D2D" },
-              ].map(row => (
-                <div key={row.label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:`1px solid ${C}10` }}>
-                  <span style={{ fontSize:9, letterSpacing:3, color:row.color }}>{row.label}</span>
-                  <span style={{ fontWeight:700, fontSize:16, color:row.color, fontFeatureSettings:"'tnum'" }}>{row.value}</span>
+                { label: "KNEW IT", value: stats.known  },
+                { label: "UNSURE",  value: stats.unsure },
+                { label: "NO CLUE", value: stats.noclue },
+              ].map((row, i) => (
+                <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", borderBottom: i < 2 ? `1px solid ${C}20` : "none" }}>
+                  <span style={{ fontSize: 9, letterSpacing: 3, opacity: 0.7 }}>{row.label}</span>
+                  <span style={{ fontWeight: 700, fontSize: 18, fontFeatureSettings: "'tnum'" }}>{row.value}</span>
                 </div>
               ))}
             </div>
 
             {/* Weak spots */}
             {weakCategories.length > 0 && (
-              <div style={{ marginBottom:24 }}>
-                <div style={{ fontSize:9, letterSpacing:4, marginBottom:10, opacity:0.5 }}>─ FOCUS AREAS (MOST NO CLUE HITS) ─</div>
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 10, opacity: 0.5 }}>─ FOCUS AREAS ─</div>
                 {weakCategories.map(([cat, count]) => (
-                  <div key={cat} style={{ display:"flex", justifyContent:"space-between", padding:"8px 0", borderBottom:`1px solid ${C}10`, fontSize:10, letterSpacing:2 }}>
-                    <span style={{ opacity:0.7 }}>{cat.toUpperCase()}</span>
-                    <span style={{ fontFeatureSettings:"'tnum'", opacity:0.9 }}>{count} miss{count !== 1 ? "es" : ""}</span>
+                  <div key={cat} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${C}15`, fontSize: 10, letterSpacing: 2 }}>
+                    <span>{cat.toUpperCase()}</span>
+                    <span style={{ opacity: 0.6, fontFeatureSettings: "'tnum'" }}>{count} miss{count !== 1 ? "es" : ""}</span>
                   </div>
                 ))}
               </div>
             )}
 
-            {pct < 100 && (
-              <div style={{ fontSize:10, lineHeight:1.9, marginBottom:20, padding:"12px 14px", border:`1px solid ${C}20`, opacity:0.7 }}>
-                {pct >= 80
-                  ? "Strong session. Review the weak categories before your next call."
-                  : pct >= 50
-                  ? "Solid progress. Repeat this deck until all cards reach KNEW IT."
-                  : "Keep going — repetition is the only way. Run the session again."
-                }
-              </div>
-            )}
+            <div style={{ fontSize: 10, lineHeight: 1.9, marginBottom: 20, padding: "12px 14px", border: `1px solid ${C}` }}>
+              {pct >= 80
+                ? "Strong session. Review the focus areas before your next call."
+                : pct >= 50
+                ? "Solid progress. Repeat this deck until all cards reach KNEW IT."
+                : "Keep going — repetition is the only way. Run the session again."
+              }
+            </div>
 
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
-              <button className="dend" onClick={startSession}>RUN AGAIN</button>
-              <button className="dend" onClick={() => setPhase("menu")}>CHANGE DECK</button>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              <button className="xbs" onClick={startSession}>RUN AGAIN</button>
+              <button className="xbs" onClick={() => setPhase("menu")}>CHANGE DECK</button>
             </div>
           </div>
         </div>

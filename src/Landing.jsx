@@ -97,8 +97,8 @@ export default function Landing({ onPlay, username }) {
           <PixelDisplay color="#48D7FF" isHovered={hovered === "impostor"} text="IMPOSTOR" shape="decagon" />
         </div>
 
-        <div className="logo-ds" style={{ maxWidth: 280, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("dossier")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("dossier")}>
-          <PixelDisplay color="#AF02FF" isHovered={hovered === "dossier"} text="DOSSIER" shape="square" />
+        <div className="logo-ds" style={{ maxWidth: 240, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("dossier")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("dossier")}>
+          <PixelDisplay color="#BC34FB" isHovered={hovered === "dossier"} text="DOSSIER" shape="square" />
         </div>
 
       </div>

@@ -72,6 +72,16 @@ export default function Landing({ onPlay }) {
           <PixelDisplay color="#2DDEA0" isHovered={hovered === "connections"} text="CONNECTIONS" shape="dot" />
         </div>
 
+        {/* Inbox */}
+        <div
+          style={{ maxWidth: 200, width: "100%", cursor: "pointer" }}
+          onMouseEnter={() => setHovered("inbox")}
+          onMouseLeave={() => setHovered(null)}
+          onClick={() => onPlay("inbox")}
+        >
+          <PixelDisplay color="#EC49D3" isHovered={hovered === "inbox"} text="INBOX" shape="triangle" />
+        </div>
+
       </div>
 
       {/* BOTTOM BAR */}

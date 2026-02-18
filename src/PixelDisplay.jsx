@@ -13,6 +13,8 @@ const FONT = {
   N: [[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
   T: [[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0]],
   S: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,0],[0,1,1,1,0],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  B: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0]],
+  X: [[1,0,0,0,1],[0,1,0,1,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,1,0,1,0],[1,0,0,0,1]],
   '?': [[0,1,1,1,0],[1,0,0,0,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,0,0,0,0],[0,0,1,0,0]],
   ' ': [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],
 };
@@ -61,9 +63,11 @@ export default function PixelDisplay({ color, isHovered, style, text, shape = "s
     <svg viewBox={`0 0 ${w} ${h}`} style={{ width: "100%", display: "block", ...style }}>
       {pxs.map(({ key, x, y }) => {
         const op = isHovered ? 1 : (dim.has(key) ? 0.07 : 1);
-        return shape === "dot"
-          ? <circle key={key} cx={x + PS / 2} cy={y + PS / 2} r={PS / 2} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />
-          : <rect key={key} x={x} y={y} width={PS} height={PS} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
+        if (shape === "dot")
+          return <circle key={key} cx={x + PS / 2} cy={y + PS / 2} r={PS / 2} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
+        if (shape === "triangle")
+          return <polygon key={key} points={`${x + PS / 2},${y} ${x},${y + PS} ${x + PS},${y + PS}`} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
+        return <rect key={key} x={x} y={y} width={PS} height={PS} fill={color} opacity={op} style={{ transition: "opacity 0.4s ease" }} />;
       })}
     </svg>
   );

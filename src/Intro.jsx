@@ -152,24 +152,6 @@ export default function Intro({ onComplete }) {
         @keyframes pulseBorder{0%,100%{opacity:0.4}50%{opacity:1}}
       `}</style>
 
-      {/* ── SCAN LINES ── */}
-      <div style={{ position: "fixed", inset: 0, backgroundImage: "repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,0.14) 2px,rgba(0,0,0,0.14) 4px)", pointerEvents: "none", zIndex: 50 }} />
-
-      {/* ── CORNER RETICLES ── */}
-      {["TL","TR","BL","BR"].map((p, i) => (
-        <div key={p} style={{
-          position: "fixed",
-          ...(p[0]==="T" ? { top: 28 } : { bottom: 28 }),
-          ...(p[1]==="L" ? { left: 28 } : { right: 28 }),
-          width: 52, height: 52,
-          borderTop:    p[0]==="T" ? `1.5px solid ${FG}` : "none",
-          borderBottom: p[0]==="B" ? `1.5px solid ${FG}` : "none",
-          borderLeft:   p[1]==="L" ? `1.5px solid ${FG}` : "none",
-          borderRight:  p[1]==="R" ? `1.5px solid ${FG}` : "none",
-          opacity: 0, pointerEvents: "none",
-          animation: `reticleIn 0.55s ease ${i * 0.07}s forwards`,
-        }} />
-      ))}
 
       {/* ── BOOT PHASE ── */}
       {phase === "boot" && (

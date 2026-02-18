@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import PixelDisplay from "./PixelDisplay.jsx";
 
 const QS = [
   { a: { l: "SaaS EBITDA Margin", v: 25, u: "%" }, b: { l: "Oil & Gas EBITDA Margin", v: 45, u: "%" }, c: "MARGINS",
@@ -84,33 +85,6 @@ const TIERS = [
 ];
 function getTier(s) { let t = TIERS[0]; for (const c of TIERS) if (s >= c.min) t = c; return t; }
 
-const FONT = {
-  H: [[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
-  I: [[1,1,1,1,1],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[1,1,1,1,1]],
-  G: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,0],[1,0,1,1,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
-  E: [[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
-  R: [[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,1,1,1,0],[1,0,1,0,0],[1,0,0,1,0],[1,0,0,0,1]],
-  O: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
-  L: [[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
-  W: [[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,1,0,1],[1,1,0,1,1],[1,0,0,0,1]],
-  '?': [[0,1,1,1,0],[1,0,0,0,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,0,0,0,0],[0,0,1,0,0]],
-  ' ': [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],
-};
-const _PX_TEXT = "HIGHER OR LOWER?";
-const _PS = 4, _PG = 1, _LG = 5;
-const _buildPx = () => {
-  const pxs = [], cw = 5 * _PS + 4 * _PG; let xOff = 0;
-  for (let ci = 0; ci < _PX_TEXT.length; ci++) {
-    const grid = FONT[_PX_TEXT[ci]] || FONT[' '];
-    for (let r = 0; r < 7; r++)
-      for (let c = 0; c < 5; c++)
-        if (grid[r][c]) pxs.push({ key: `${ci}-${r}-${c}`, x: xOff + c * (_PS + _PG), y: r * (_PS + _PG) });
-    xOff += cw + _LG;
-  }
-  return { pxs, w: xOff - _LG, h: 7 * _PS + 6 * _PG };
-};
-const { pxs: PX_PIXELS, w: PX_W, h: PX_H } = _buildPx();
-
 const getTZTime = (tz) => new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 const isMktOpen = (tz, oh, om, ch, cm) => {
   const local = new Date(new Date().toLocaleString("en-US", { timeZone: tz }));
@@ -120,33 +94,7 @@ const isMktOpen = (tz, oh, om, ch, cm) => {
   return mins >= oh * 60 + om && mins < ch * 60 + cm;
 };
 
-function PixelDisplay({ color }) {
-  const [dim, setDim] = useState(() => new Set());
-  useEffect(() => {
-    const iv = setInterval(() => {
-      setDim(prev => {
-        const next = new Set(prev);
-        const n = Math.floor(Math.random() * 3) + 1;
-        for (let i = 0; i < n; i++) {
-          const px = PX_PIXELS[Math.floor(Math.random() * PX_PIXELS.length)];
-          next.has(px.key) ? next.delete(px.key) : next.add(px.key);
-        }
-        return next;
-      });
-    }, 180);
-    return () => clearInterval(iv);
-  }, []);
-  return (
-    <svg viewBox={`0 0 ${PX_W} ${PX_H}`} style={{ width: "100%", display: "block", marginBottom: 28 }}>
-      {PX_PIXELS.map(({ key, x, y }) => (
-        <rect key={key} x={x} y={y} width={_PS} height={_PS} fill={color}
-          opacity={dim.has(key) ? 0.07 : 1} style={{ transition: "opacity 0.55s ease" }} />
-      ))}
-    </svg>
-  );
-}
-
-export default function Game() {
+export default function Game({ onBack }) {
   const [ph, setPh] = useState("menu");
   const [qs, setQs] = useState([]);
   const [i, setI] = useState(0);
@@ -252,7 +200,7 @@ export default function Game() {
         {/* ── MENU ── */}
         {ph === "menu" && (
           <div style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
-            <PixelDisplay color={C} />
+            <PixelDisplay color={C} style={{ marginBottom: 28 }} />
 
             <div style={{ border: `1px solid ${C}`, padding: "16px 20px", marginBottom: 20, textAlign: "left" }}>
               <div style={{ fontSize: 10, letterSpacing: 4, marginBottom: 10 }}>─ BRIEFING ─</div>
@@ -382,7 +330,7 @@ export default function Game() {
 
       {/* ═══ BOTTOM BAR ═══ */}
       <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
-        <span>QUARTR</span>
+        <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
         <span>HIGHER/LOWER V1.0</span>
         <span>{(ph === "play" || ph === "reveal") ? "● ACTIVE" : "○ STANDBY"}</span>
       </div>

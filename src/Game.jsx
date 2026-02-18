@@ -157,7 +157,7 @@ export default function Game({ onBack, username, topPlayer, onLeaderboard }) {
   const ERR = "#FF2D2D";
 
   return (
-    <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden", userSelect: "none" }}>
+    <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden", userSelect: "none" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -204,7 +204,7 @@ export default function Game({ onBack, username, topPlayer, onLeaderboard }) {
       </div>
 
       {/* ═══ MAIN ═══ */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: showExp ? "flex-start" : "center", padding: "20px 16px", position: "relative", overflowY: "auto" }}>
+      <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: showExp ? "flex-start" : "center", padding: "20px 16px", position: "relative", overflowY: "auto" }}>
 
         {stmp && (
           <div style={{

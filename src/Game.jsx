@@ -215,19 +215,14 @@ export default function Game() {
       `}</style>
 
       {/* ═══ TOP BAR ═══ */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "10px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0 }}>
-        <div style={{ fontSize: 9, letterSpacing: 2, lineHeight: 2 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
+        <div style={{ display: "flex", gap: 16 }}>
           {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
-            <div key={label} style={{ display: "flex", gap: 10 }}>
-              <span style={{ minWidth: 72 }}>{label}</span>
-              <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span>
-            </div>
+            <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 4, textAlign: "center", alignSelf: "center" }}>
-          A QUARTR LABS GAME
-        </div>
-        <div style={{ fontSize: 9, letterSpacing: 2, textAlign: "right", lineHeight: 2 }}>
+        <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+        <div style={{ display: "flex", gap: 16 }}>
           {[
             { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
             { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
@@ -235,12 +230,7 @@ export default function Game() {
           ].map(({ label, tz, oh, om, ch, cm }) => {
             const open = isMktOpen(tz, oh, om, ch, cm);
             return (
-              <div key={label} style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-                <span>{label}</span>
-                <span style={{ color: open ? "#2DFF72" : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none", minWidth: 50, textAlign: "right" }}>
-                  {open ? "OPEN" : "CLOSED"}
-                </span>
-              </div>
+              <span key={label}>{label} <span style={{ color: open ? "#2DFF72" : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>
             );
           })}
         </div>

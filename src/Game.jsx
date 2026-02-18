@@ -1,36 +1,66 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 const QS = [
-  { a: { l: "SaaS EBITDA Margin", v: 25, u: "%" }, b: { l: "Oil & Gas EBITDA Margin", v: 45, u: "%" }, c: "MARGINS" },
-  { a: { l: "Apple P/E Ratio", v: 30, u: "x" }, b: { l: "JPMorgan P/E Ratio", v: 12, u: "x" }, c: "VALUATION" },
-  { a: { l: "Global PE AUM", v: 8, u: "T$" }, b: { l: "Global Hedge Fund AUM", v: 4, u: "T$" }, c: "MKT SIZE" },
-  { a: { l: "S&P 500 Avg Return/yr", v: 10, u: "%" }, b: { l: "US 10Y Treasury Yield", v: 4, u: "%" }, c: "RETURNS" },
-  { a: { l: "Netflix Revenue", v: 39, u: "B$" }, b: { l: "Spotify Revenue", v: 16, u: "B$" }, c: "REVENUE" },
-  { a: { l: "PE Fund Lifecycle", v: 10, u: "yr" }, b: { l: "VC Fund Lifecycle", v: 12, u: "yr" }, c: "FUNDS" },
-  { a: { l: "NYSE Listed Cos", v: 2400, u: "" }, b: { l: "NASDAQ Listed Cos", v: 3700, u: "" }, c: "EXCHANGES" },
-  { a: { l: "BlackRock AUM", v: 10, u: "T$" }, b: { l: "Vanguard AUM", v: 8, u: "T$" }, c: "ASSET MGMT" },
-  { a: { l: "Hedge Fund Mgmt Fee", v: 1.5, u: "%" }, b: { l: "Avg ETF Expense Ratio", v: 0.4, u: "%" }, c: "FEES" },
-  { a: { l: "US IPOs in 2021", v: 1000, u: "" }, b: { l: "US IPOs in 2023", v: 150, u: "" }, c: "IPO MKT" },
-  { a: { l: "M&A Advisory Fee", v: 2, u: "%" }, b: { l: "PE Carry Rate", v: 20, u: "%" }, c: "FEES" },
-  { a: { l: "Amazon Gross Margin", v: 48, u: "%" }, b: { l: "Walmart Gross Margin", v: 24, u: "%" }, c: "MARGINS" },
-  { a: { l: "S&P500 Calls/Quarter", v: 500, u: "" }, b: { l: "Analysts per S&P500 Co", v: 20, u: "" }, c: "RESEARCH" },
-  { a: { l: "Days to Close PE Deal", v: 180, u: "d" }, b: { l: "Days to IPO Process", v: 120, u: "d" }, c: "TIMELINES" },
-  { a: { l: "US Equity Mkt Cap", v: 50, u: "T$" }, b: { l: "US Bond Mkt Size", v: 55, u: "T$" }, c: "MKT SIZE" },
-  { a: { l: "CAPEX/Rev Tech", v: 8, u: "%" }, b: { l: "CAPEX/Rev Telecom", v: 18, u: "%" }, c: "CAPEX" },
-  { a: { l: "Buy-Side Firms", v: 15000, u: "" }, b: { l: "Sell-Side Firms", v: 5000, u: "" }, c: "STRUCTURE" },
-  { a: { l: "LBO Debt Ratio", v: 65, u: "%" }, b: { l: "Public Co Debt Ratio", v: 35, u: "%" }, c: "LEVERAGE" },
-  { a: { l: "Top Quartile ROIC", v: 25, u: "%" }, b: { l: "Average WACC", v: 9, u: "%" }, c: "RETURNS" },
-  { a: { l: "SaaS Rev Multiple", v: 8, u: "x" }, b: { l: "Banking Rev Multiple", v: 3, u: "x" }, c: "VALUATION" },
-  { a: { l: "Institutional Own SP500", v: 80, u: "%" }, b: { l: "Retail Own SP500", v: 20, u: "%" }, c: "OWNERSHIP" },
-  { a: { l: "Bloomberg Terminal/yr", v: 25000, u: "$" }, b: { l: "Refinitiv Eikon/yr", v: 15000, u: "$" }, c: "TOOLS" },
-  { a: { l: "PE Dry Powder", v: 4, u: "T$" }, b: { l: "VC Dry Powder", v: 0.5, u: "T$" }, c: "DRY POWDER" },
-  { a: { l: "Buybacks SP500 2023", v: 800, u: "B$" }, b: { l: "Dividends SP500 2023", v: 600, u: "B$" }, c: "CAP RETURN" },
-  { a: { l: "EV/EBITDA Tech", v: 20, u: "x" }, b: { l: "EV/EBITDA Banks", v: 8, u: "x" }, c: "VALUATION" },
-  { a: { l: "US Public Companies", v: 4000, u: "" }, b: { l: "US Private Cos >100M", v: 18000, u: "" }, c: "STRUCTURE" },
-  { a: { l: "Buy-Side Analyst Pay", v: 150, u: "K$" }, b: { l: "Sell-Side Analyst Pay", v: 100, u: "K$" }, c: "CAREERS" },
-  { a: { l: "Global ESG AUM", v: 30, u: "T$" }, b: { l: "Crypto Market Cap", v: 2, u: "T$" }, c: "TRENDS" },
-  { a: { l: "Avg CEO Tenure", v: 7, u: "yr" }, b: { l: "Avg CFO Tenure", v: 5, u: "yr" }, c: "LEADERSHIP" },
-  { a: { l: "FCF Yield Tech", v: 4, u: "%" }, b: { l: "Div Yield Utilities", v: 3.5, u: "%" }, c: "YIELDS" },
+  { a: { l: "SaaS EBITDA Margin", v: 25, u: "%" }, b: { l: "Oil & Gas EBITDA Margin", v: 45, u: "%" }, c: "MARGINS",
+    e: { w: "EBITDA margin = operating profit ÷ revenue. Higher means more of each dollar sold becomes profit before financing costs.", d: "Oil & Gas has high commodity prices vs relatively fixed extraction costs. SaaS spends heavily on R&D and sales to acquire customers, compressing margins." } },
+  { a: { l: "Apple P/E Ratio", v: 30, u: "x" }, b: { l: "JPMorgan P/E Ratio", v: 12, u: "x" }, c: "VALUATION",
+    e: { w: "P/E = stock price ÷ earnings per share. Higher means investors pay more for each dollar of current profit.", d: "Apple commands a premium for expected growth and ecosystem lock-in. Banks are regulated, cyclical, and grow slowly — investors pay less per dollar of earnings." } },
+  { a: { l: "Global PE AUM", v: 8, u: "T$" }, b: { l: "Global Hedge Fund AUM", v: 4, u: "T$" }, c: "MKT SIZE",
+    e: { w: "AUM = assets under management — total capital a firm or industry deploys on behalf of investors.", d: "Private equity has grown explosively over 20 years. Hedge funds stagnated after 2008 — many underperformed public markets, triggering institutional outflows." } },
+  { a: { l: "S&P 500 Avg Return/yr", v: 10, u: "%" }, b: { l: "US 10Y Treasury Yield", v: 4, u: "%" }, c: "RETURNS",
+    e: { w: "S&P 500 avg return = historical long-run annual gain from US stocks. Treasury yield = risk-free interest the US government pays on 10-year bonds.", d: "Stocks are risky — you can lose everything. The ~6% excess over treasuries is the 'equity risk premium,' compensation investors demand for bearing that risk." } },
+  { a: { l: "Netflix Revenue", v: 39, u: "B$" }, b: { l: "Spotify Revenue", v: 16, u: "B$" }, c: "REVENUE",
+    e: { w: "Revenue = total sales. Both are global subscription streaming companies.", d: "Netflix charges more per user (~$15-22/mo vs ~$10) and has more paying subscribers globally. Higher price × more users = far larger revenue." } },
+  { a: { l: "PE Fund Lifecycle", v: 10, u: "yr" }, b: { l: "VC Fund Lifecycle", v: 12, u: "yr" }, c: "FUNDS",
+    e: { w: "Fund lifecycle = time from first close to final wind-down, when all investments are exited and capital returned to investors.", d: "VC backs early-stage startups that need years to reach IPO or acquisition. PE buys mature businesses that can be restructured and exited on a shorter timeline." } },
+  { a: { l: "NYSE Listed Cos", v: 2400, u: "" }, b: { l: "NASDAQ Listed Cos", v: 3700, u: "" }, c: "EXCHANGES",
+    e: { w: "Listed companies = businesses whose shares publicly trade on that exchange.", d: "NASDAQ has lower listing requirements and became the home of tech startups. NYSE is older with stricter standards — fewer but typically larger, more established companies." } },
+  { a: { l: "BlackRock AUM", v: 10, u: "T$" }, b: { l: "Vanguard AUM", v: 8, u: "T$" }, c: "ASSET MGMT",
+    e: { w: "Both are the world's two largest asset managers, running trillions across index funds, ETFs, and institutional mandates.", d: "BlackRock manages active and passive strategies across more asset classes and geographies. Vanguard is primarily passive retail index funds — large but narrower in scope." } },
+  { a: { l: "Hedge Fund Mgmt Fee", v: 1.5, u: "%" }, b: { l: "Avg ETF Expense Ratio", v: 0.4, u: "%" }, c: "FEES",
+    e: { w: "Annual fee charged as a % of AUM. Compounds significantly over time — a key reason most active managers fail to outperform after fees.", d: "Hedge funds charge for active management and claimed alpha. ETFs passively track an index — no stock-picking, minimal overhead, so cost is a fraction." } },
+  { a: { l: "US IPOs in 2021", v: 1000, u: "" }, b: { l: "US IPOs in 2023", v: 150, u: "" }, c: "IPO MKT",
+    e: { w: "IPO = Initial Public Offering. A private company lists on a stock exchange and sells shares to the public for the first time.", d: "2021 was an all-time boom driven by SPACs and near-zero interest rates. By 2023, rate hikes and falling valuations shut the IPO window almost entirely." } },
+  { a: { l: "M&A Advisory Fee", v: 2, u: "%" }, b: { l: "PE Carry Rate", v: 20, u: "%" }, c: "FEES",
+    e: { w: "M&A advisory fee = % of deal value banks charge for advising a transaction. PE carry = % of fund profits PE managers take above a minimum return hurdle (~8%).", d: "Banks earn fees regardless of outcome. PE carry is pure upside — managers only earn it if investors make strong returns. Different structures, wildly different incentives." } },
+  { a: { l: "Amazon Gross Margin", v: 48, u: "%" }, b: { l: "Walmart Gross Margin", v: 24, u: "%" }, c: "MARGINS",
+    e: { w: "Gross margin = (revenue − cost of goods sold) ÷ revenue. What remains after direct product costs, before operating expenses.", d: "Amazon blends high-margin AWS cloud and marketplace fees into its retail business. Walmart is almost entirely retail, competing on price — thin margins are the business model." } },
+  { a: { l: "S&P500 Calls/Quarter", v: 500, u: "" }, b: { l: "Analysts per S&P500 Co", v: 20, u: "" }, c: "RESEARCH",
+    e: { w: "Earnings calls = quarterly calls where companies discuss results with analysts and investors. Sell-side analysts = bank researchers who publish stock recommendations.", d: "~500 S&P500 companies each hold ~1 call per quarter. Large-cap stocks attract ~20 analysts on average, all competing to publish differentiated research." } },
+  { a: { l: "Days to Close PE Deal", v: 180, u: "d" }, b: { l: "Days to IPO Process", v: 120, u: "d" }, c: "TIMELINES",
+    e: { w: "Deal close = time from signing to completing a PE acquisition. IPO process = time from selecting banks to first trading day.", d: "PE deals involve bilateral negotiations, deep due diligence, and arranging debt financing — slow and complex. IPOs follow a structured roadshow that is faster but market-dependent." } },
+  { a: { l: "US Equity Mkt Cap", v: 50, u: "T$" }, b: { l: "US Bond Mkt Size", v: 55, u: "T$" }, c: "MKT SIZE",
+    e: { w: "Equity market cap = total value of publicly traded shares. Bond market size = total outstanding debt from governments, corporations, and agencies.", d: "Surprising to most — the US bond market is slightly larger. Governments and corporations issue trillions in debt continuously. Bonds are the plumbing of global finance." } },
+  { a: { l: "CAPEX/Rev Tech", v: 8, u: "%" }, b: { l: "CAPEX/Rev Telecom", v: 18, u: "%" }, c: "CAPEX",
+    e: { w: "CAPEX/Revenue = capital expenditure on physical assets ÷ total sales. Measures how asset-intensive a business model is.", d: "Telecom requires massive physical infrastructure — towers, fiber, spectrum licenses — needing constant investment. Software businesses are largely asset-light; engineers replace factories." } },
+  { a: { l: "Buy-Side Firms", v: 15000, u: "" }, b: { l: "Sell-Side Firms", v: 5000, u: "" }, c: "STRUCTURE",
+    e: { w: "Buy-side = firms that invest capital (pension funds, PE, hedge funds). Sell-side = firms that advise and facilitate transactions (investment banks, brokers).", d: "The buy-side is fragmented — thousands of boutique funds exist globally. The sell-side is concentrated: a handful of large banks dominate advisory and trading." } },
+  { a: { l: "LBO Debt Ratio", v: 65, u: "%" }, b: { l: "Public Co Debt Ratio", v: 35, u: "%" }, c: "LEVERAGE",
+    e: { w: "Debt ratio = debt ÷ total capital. Shows how much of a business is financed by borrowing vs equity.", d: "In an LBO, PE deliberately loads companies with debt to amplify equity returns — leverage is the point. Public companies are more conservative; excessive debt spooks investors and credit agencies." } },
+  { a: { l: "Top Quartile ROIC", v: 25, u: "%" }, b: { l: "Average WACC", v: 9, u: "%" }, c: "RETURNS",
+    e: { w: "ROIC = return on invested capital (profit ÷ capital employed). WACC = weighted average cost of capital — the minimum return needed to satisfy debt and equity holders.", d: "The best companies generate returns far above their cost of capital. That spread is how economic value is created. Companies below WACC are actively destroying value." } },
+  { a: { l: "SaaS Rev Multiple", v: 8, u: "x" }, b: { l: "Banking Rev Multiple", v: 3, u: "x" }, c: "VALUATION",
+    e: { w: "Revenue multiple = enterprise value ÷ annual revenue. Investors pay X dollars per dollar of annual sales.", d: "SaaS revenue is recurring, high-margin, and scalable — investors pay a premium. Banking revenue is cyclical, regulated, and capital-intensive — discounted heavily." } },
+  { a: { l: "Institutional Own SP500", v: 80, u: "%" }, b: { l: "Retail Own SP500", v: 20, u: "%" }, c: "OWNERSHIP",
+    e: { w: "Institutional investors = pension funds, endowments, mutual funds, insurers. Retail = individual investors buying stocks directly.", d: "Most retail wealth flows into markets through institutional vehicles (401k, mutual funds). Institutions dominate because of scale, resources, and professional mandates." } },
+  { a: { l: "Bloomberg Terminal/yr", v: 25000, u: "$" }, b: { l: "Refinitiv Eikon/yr", v: 15000, u: "$" }, c: "TOOLS",
+    e: { w: "Both are professional financial data platforms used by traders, analysts, and portfolio managers for real-time market data and analytics.", d: "Bloomberg is the dominant industry standard — its network effect, data depth, and messaging system (Bloomberg Chat) justify the premium. Refinitiv is a capable #2 but hasn't broken Bloomberg's grip." } },
+  { a: { l: "PE Dry Powder", v: 4, u: "T$" }, b: { l: "VC Dry Powder", v: 0.5, u: "T$" }, c: "DRY POWDER",
+    e: { w: "Dry powder = capital that LPs (investors) have committed to a fund but that hasn't been deployed into investments yet.", d: "PE manages far more total capital than VC — its dry powder reflects that scale. VC is a smaller, earlier-stage market focused on startups vs PE's large buyouts." } },
+  { a: { l: "Buybacks SP500 2023", v: 800, u: "B$" }, b: { l: "Dividends SP500 2023", v: 600, u: "B$" }, c: "CAP RETURN",
+    e: { w: "Buybacks = companies repurchase own shares, reducing share count and boosting EPS. Dividends = direct cash payments to shareholders.", d: "Buybacks are flexible (no obligation to maintain), tax-efficient, and signal confidence. Dividend cuts are seen as red flags, so companies increasingly prefer buybacks." } },
+  { a: { l: "EV/EBITDA Tech", v: 20, u: "x" }, b: { l: "EV/EBITDA Banks", v: 8, u: "x" }, c: "VALUATION",
+    e: { w: "EV/EBITDA = enterprise value ÷ operating earnings. Shows what the market pays per dollar of profit.", d: "Tech trades at premium multiples for growth, scalability, and high margins. Banks face regulatory caps, credit cycle risks, and slower growth — valued cheaply vs earnings." } },
+  { a: { l: "US Public Companies", v: 4000, u: "" }, b: { l: "US Private Cos >100M", v: 18000, u: "" }, c: "STRUCTURE",
+    e: { w: "Public companies trade on stock exchanges — anyone can buy shares. Private companies don't list publicly — owned by founders, PE, or other private investors.", d: "Going public requires expensive compliance, quarterly reporting, and constant scrutiny. Most large companies stay private — cheaper, less burdensome, and allows longer-term thinking." } },
+  { a: { l: "Buy-Side Analyst Pay", v: 150, u: "K$" }, b: { l: "Sell-Side Analyst Pay", v: 100, u: "K$" }, c: "CAREERS",
+    e: { w: "Buy-side analysts research investments for funds (directly impacting portfolio decisions). Sell-side analysts publish research for banks and brokers.", d: "Buy-side analysts are paid on portfolio performance — their edge translates directly to returns. Sell-side earns from commissions and banking fees, not investment outcomes, so comp is lower." } },
+  { a: { l: "Global ESG AUM", v: 30, u: "T$" }, b: { l: "Crypto Market Cap", v: 2, u: "T$" }, c: "TRENDS",
+    e: { w: "ESG AUM = capital in funds applying environmental, social, and governance filters. Crypto market cap = total value of all digital asset tokens.", d: "ESG is embedded in trillions of institutional mandates globally — pension funds, sovereign wealth. Crypto is large in absolute terms but tiny compared to traditional institutional finance." } },
+  { a: { l: "Avg CEO Tenure", v: 7, u: "yr" }, b: { l: "Avg CFO Tenure", v: 5, u: "yr" }, c: "LEADERSHIP",
+    e: { w: "Tenure = how long executives typically hold their role before leaving or being replaced.", d: "CEOs set long-term strategy — boards value stability. CFOs move faster: many get promoted to CEO, recruited away by larger companies, or replaced as financial complexity grows." } },
+  { a: { l: "FCF Yield Tech", v: 4, u: "%" }, b: { l: "Div Yield Utilities", v: 3.5, u: "%" }, c: "YIELDS",
+    e: { w: "FCF yield = free cash flow ÷ market cap. Dividend yield = annual dividend ÷ stock price. Both measure cash return relative to company value.", d: "Tech generates strong cash flows but reinvests most into growth, keeping yield lower than it could be. Utilities have predictable regulated revenues and pay out the majority as dividends." } },
 ];
 
 function shuf(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
@@ -129,6 +159,7 @@ export default function Game() {
   const [shake, setShake] = useState(false);
   const [pts, setPts] = useState(0);
   const [stmp, setStmp] = useState(null);
+  const [showExp, setShowExp] = useState(false);
   const [tick, setTick] = useState(0);
   const tmr = useRef(null);
 
@@ -136,7 +167,7 @@ export default function Game() {
 
   const start = useCallback(() => {
     setQs(shuf(QS).slice(0, 20).map(q => Math.random() > 0.5 ? { ...q, a: q.b, b: q.a } : q));
-    setI(0); setSc(0); setSt(0); setCmb(1); setRes(null); setPh("play");
+    setI(0); setSc(0); setSt(0); setCmb(1); setRes(null); setShowExp(false); setPh("play");
   }, []);
 
   const pick = useCallback((higher) => {
@@ -154,7 +185,7 @@ export default function Game() {
       }, 1500);
     } else {
       setSt(0); setCmb(1); setShake(true); setTimeout(() => setShake(false), 400);
-      tmr.current = setTimeout(() => { setHi(h => Math.max(h, sc)); setPh("end"); }, 1600);
+      setTimeout(() => setShowExp(true), 500);
     }
   }, [ph, qs, i, st, best, sc]);
 
@@ -216,7 +247,7 @@ export default function Game() {
       </div>
 
       {/* ═══ MAIN ═══ */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", position: "relative" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: showExp ? "flex-start" : "center", padding: "20px 16px", position: "relative", overflowY: "auto" }}>
 
         {stmp && (
           <div style={{
@@ -341,6 +372,20 @@ export default function Game() {
             <div style={{ height: 2, background: `${C}30`, marginTop: 1 }}>
               <div style={{ height: "100%", width: `${((i + (rv && res ? 1 : 0)) / qs.length) * 100}%`, background: st >= 3 ? ac : C, transition: "all 0.5s", boxShadow: st >= 3 ? `0 0 8px ${ac}60` : "none" }} />
             </div>
+
+            {/* Debrief panel — shown on wrong answer */}
+            {showExp && !res && q && q.e && (
+              <div style={{ marginTop: 16, border: `1px solid ${ERR}`, padding: "18px 20px", animation: "revealV 0.25s ease" }}>
+                <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 14, color: ERR }}>─ DEBRIEF ─</div>
+                <div style={{ fontSize: 9, letterSpacing: 3, opacity: 0.45, marginBottom: 5 }}>WHAT ARE THESE</div>
+                <div style={{ fontSize: 11, lineHeight: 1.8, marginBottom: 14 }}>{q.e.w}</div>
+                <div style={{ fontSize: 9, letterSpacing: 3, opacity: 0.45, marginBottom: 5 }}>WHY THE DIFFERENCE</div>
+                <div style={{ fontSize: 11, lineHeight: 1.8, marginBottom: 18 }}>{q.e.d}</div>
+                <button className="gb" onClick={() => { setHi(h => Math.max(h, sc)); setShowExp(false); setPh("end"); }} style={{ width: "100%", letterSpacing: 5, fontSize: 12, borderColor: ERR, color: ERR }}>
+                  END SESSION
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

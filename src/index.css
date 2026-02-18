@@ -19,12 +19,35 @@ body {
   /* Center title expands to fill the bar */
   .topbar-ctr { flex: 1 !important; text-align: center; padding: 0 !important; }
 
+  /* Full-screen page: lock to viewport height, no full-page scroll */
+  .page-root {
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Scrollable inner content area — only this div scrolls, not the whole page */
+  .scroll-main {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+
   /* Landing: tighten logo stack */
-  .land-main { gap: 20px !important; padding: 20px 12px !important; }
+  .land-main { gap: 16px !important; padding: 16px 12px !important; }
+
+  /* Landing logos: proportional vw widths so all logos are the same height.
+     viewBox widths: HIGHER OR LOWER?=459, CONNECTIONS=314, INBOX=140, IMPOSTOR=227
+     Scale so HIGHER OR LOWER? = 88vw, others proportional → all render at same height. */
+  .logo-hl { width: 88vw !important; max-width: 88vw !important; }
+  .logo-cn { width: 60vw !important; max-width: 60vw !important; }
+  .logo-ib { width: 27vw !important; max-width: 27vw !important; }
+  .logo-im { width: 43vw !important; max-width: 43vw !important; }
+  .logo-ds { width: 54vw !important; max-width: 54vw !important; }
 
   /* Higher or Lower: compact comparison cards */
   .g-card    { padding: 18px 10px !important; }
-  .g-hudnum  { font-size: 14px !important; }
 
   /* Connections: compact tiles */
   .c-tile    { min-height: 52px !important; padding: 8px 4px !important; font-size: 8px !important; }

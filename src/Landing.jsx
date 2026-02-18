@@ -28,7 +28,7 @@ export default function Landing({ onPlay, username }) {
   }, []);
 
   return (
-    <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+    <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -79,22 +79,26 @@ export default function Landing({ onPlay, username }) {
       </div>
 
       {/* MAIN — stacked logos */}
-      <div className="land-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 48, padding: "40px 20px" }}>
+      <div className="land-main scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 48, padding: "40px 20px" }}>
 
-        <div style={{ maxWidth: 520, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("finance")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("finance")}>
+        <div className="logo-hl" style={{ maxWidth: 520, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("finance")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("finance")}>
           <PixelDisplay color="#FF972D" isHovered={hovered === "finance"} text="HIGHER OR LOWER?" shape="square" />
         </div>
 
-        <div style={{ maxWidth: 360, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("connections")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("connections")}>
+        <div className="logo-cn" style={{ maxWidth: 360, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("connections")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("connections")}>
           <PixelDisplay color="#2DDEA0" isHovered={hovered === "connections"} text="CONNECTIONS" shape="dot" />
         </div>
 
-        <div style={{ maxWidth: 200, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("inbox")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("inbox")}>
+        <div className="logo-ib" style={{ maxWidth: 200, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("inbox")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("inbox")}>
           <PixelDisplay color="#EC49D3" isHovered={hovered === "inbox"} text="INBOX" shape="triangle" />
         </div>
 
-        <div style={{ maxWidth: 340, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("impostor")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("impostor")}>
+        <div className="logo-im" style={{ maxWidth: 340, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("impostor")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("impostor")}>
           <PixelDisplay color="#48D7FF" isHovered={hovered === "impostor"} text="IMPOSTOR" shape="decagon" />
+        </div>
+
+        <div className="logo-ds" style={{ maxWidth: 280, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("dossier")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("dossier")}>
+          <PixelDisplay color="#AF02FF" isHovered={hovered === "dossier"} text="DOSSIER" shape="square" />
         </div>
 
       </div>

@@ -5,6 +5,7 @@ import Game from "./Game.jsx";
 import Connections from "./Connections.jsx";
 import Inbox from "./Inbox.jsx";
 import Impostor from "./Impostor.jsx";
+import Dossier from "./Dossier.jsx";
 import Leaderboard from "./Leaderboard.jsx";
 import { fetchAllScores, topOverallPlayer } from "./supabase.js";
 
@@ -66,6 +67,7 @@ export default function App() {
   if (view === "connections")  return <Connections onBack={goLanding} username={username} {...sharedProps} />;
   if (view === "inbox")        return <Inbox       onBack={goLanding} username={username} {...sharedProps} />;
   if (view === "impostor")     return <Impostor    onBack={goLanding} username={username} {...sharedProps} />;
+  if (view === "dossier")      return <Dossier     onBack={goLanding} username={username} {...sharedProps} />;
   if (view === "leaderboard")  return <Leaderboard onBack={goLanding} username={username} topPlayer={topPlayer} />;
   return <Landing onPlay={(game) => navigate(game)} username={username} />;
 }

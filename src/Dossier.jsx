@@ -30,8 +30,8 @@ const SHARED_STYLE = `
   .xbs{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.12em;padding:14px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
   .xbs:hover{background:${C};color:${BG};}
   .xbs:active{transform:scale(0.97);}
-  .ftab{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.12em;padding:7px 11px;background:transparent;border:1px solid ${C}40;color:${C};opacity:0.45;cursor:pointer;transition:all 0.12s;}
-  .ftab:hover{border-color:${C};opacity:0.8;}
+  .ftab{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.12em;padding:7px 11px;background:transparent;border:1px solid ${C}60;color:${C};opacity:0.7;cursor:pointer;transition:all 0.12s;}
+  .ftab:hover{border-color:${C};opacity:1;}
   .ftab.on{background:${C};color:${BG};border-color:${C};opacity:1;}
 `;
 
@@ -105,17 +105,17 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     return (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
         <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
-          <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
+          <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 0.7} onMouseLeave={e => e.target.style.opacity = 1}>SEE LEADERBOARD</span>
           <span style={{ opacity: 0.25 }}>|</span>
           {[["STO","Europe/Stockholm"],["DUB","Europe/Dublin"],["NYC","America/New_York"]].map(([label, tz]) => (
             <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
+        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 0.7} onMouseLeave={e => e.currentTarget.style.opacity = 1}>QUARTR LABS GAME STUDIO</div>
         <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
           {topPlayer && (
             <>
-              <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
+              <span style={{ whiteSpace: "nowrap" }}>№1 <span style={{ fontWeight: 700 }}>{topPlayer}</span></span>
               <span style={{ opacity: 0.25 }}>|</span>
             </>
           )}
@@ -135,7 +135,7 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
   function BottomBar({ right }) {
     return (
       <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
-        <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
+        <span style={{ cursor: "pointer", transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 0.7} onMouseLeave={e => e.target.style.opacity = 1}>← HOME</span>
         <span>DOSSIER V1.0</span>
         <span>{right}</span>
       </div>
@@ -155,21 +155,21 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
               <PixelDisplay color={C} text="DOSSIER" shape="square" />
             </div>
 
-            <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 10, opacity: 0.5 }}>─ FILTER BY CATEGORY ─</div>
+            <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 10 }}>─ FILTER BY CATEGORY ─</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 20 }}>
               {CATEGORIES.map(cat => (
                 <button key={cat.key} className={`ftab${catFilter === cat.key ? " on" : ""}`} onClick={() => setCatFilter(cat.key)}>{cat.label}</button>
               ))}
             </div>
 
-            <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 10, opacity: 0.5 }}>─ FILTER BY SOURCE GAME ─</div>
+            <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 10 }}>─ FILTER BY SOURCE GAME ─</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 24 }}>
               {SOURCES.map(src => (
                 <button key={src.key} className={`ftab${srcFilter === src.key ? " on" : ""}`} onClick={() => setSrcFilter(src.key)}>{src.label}</button>
               ))}
             </div>
 
-            <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 20, textAlign: "center", opacity: 0.5 }}>
+            <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 20, textAlign: "center" }}>
               {filteredCount === 0 ? "─ NO CARDS MATCH ─" : `─ ${filteredCount} CARD${filteredCount !== 1 ? "S" : ""} SELECTED ─`}
             </div>
 
@@ -185,7 +185,7 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
                 "Session ends when all cards are mastered",
               ].map((txt, i) => (
                 <div key={i} style={{ fontSize: 11, lineHeight: 2.2, display: "flex", gap: 10 }}>
-                  <span style={{ opacity: 0.4 }}>{String(i + 1).padStart(2, "0")}</span>
+                  <span>{String(i + 1).padStart(2, "0")}</span>
                   <span>{txt}</span>
                 </div>
               ))}
@@ -212,8 +212,8 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
 
             {/* Progress bar */}
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 9, letterSpacing: 3 }}>
-              <span style={{ opacity: 0.5 }}>MASTERED <span style={{ fontWeight: 700, opacity: 1 }}>{stats.known}</span></span>
-              <span style={{ opacity: 0.5 }}>REMAINING <span style={{ fontWeight: 700, opacity: 1 }}>{deck.length}</span></span>
+              <span>MASTERED <span style={{ fontWeight: 700 }}>{stats.known}</span></span>
+              <span>REMAINING <span style={{ fontWeight: 700 }}>{deck.length}</span></span>
             </div>
             <div style={{ height: 2, background: `${C}20`, marginBottom: 20 }}>
               <div style={{ height: "100%", width: `${masteredPct}%`, background: C, transition: "width 0.4s" }} />
@@ -239,18 +239,18 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
               onMouseEnter={e => { if (!flipped) e.currentTarget.style.borderColor = `${C}60`; }}
               onMouseLeave={e => { if (!flipped) e.currentTarget.style.borderColor = C; }}
             >
-              <div style={{ fontSize: 8, letterSpacing: 4, marginBottom: 16, opacity: 0.4 }}>
+              <div style={{ fontSize: 8, letterSpacing: 4, marginBottom: 16 }}>
                 {card.category.toUpperCase()} · {card.source.toUpperCase()}
               </div>
 
               {!flipped ? (
                 <>
                   <div style={{ fontSize: 14, lineHeight: 1.9, letterSpacing: 0.3, fontWeight: 500 }}>{card.front}</div>
-                  <div style={{ fontSize: 8, letterSpacing: 3, marginTop: 20, opacity: 0.35 }}>TAP TO REVEAL</div>
+                  <div style={{ fontSize: 8, letterSpacing: 3, marginTop: 20 }}>TAP TO REVEAL</div>
                 </>
               ) : (
                 <div style={{ animation: "flipReveal 0.2s ease" }}>
-                  <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 14, opacity: 0.5 }}>─ ANSWER ─</div>
+                  <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 14 }}>─ ANSWER ─</div>
                   <div style={{ fontSize: 13, lineHeight: 1.9, letterSpacing: 0.3 }}>{card.back}</div>
                 </div>
               )}
@@ -291,7 +291,7 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
 
             <div style={{ textAlign: "center", marginBottom: 24 }}>
               <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: 4, fontFeatureSettings: "'tnum'" }}>{pct}%</div>
-              <div style={{ fontSize: 9, letterSpacing: 5, opacity: 0.5 }}>MASTERY RATE · {total} CARDS REVIEWED</div>
+              <div style={{ fontSize: 9, letterSpacing: 5 }}>MASTERY RATE · {total} CARDS REVIEWED</div>
             </div>
 
             {/* Breakdown */}
@@ -302,7 +302,7 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
                 { label: "NO CLUE", value: stats.noclue },
               ].map((row, i) => (
                 <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", borderBottom: i < 2 ? `1px solid ${C}20` : "none" }}>
-                  <span style={{ fontSize: 9, letterSpacing: 3, opacity: 0.7 }}>{row.label}</span>
+                  <span style={{ fontSize: 9, letterSpacing: 3 }}>{row.label}</span>
                   <span style={{ fontWeight: 700, fontSize: 18, fontFeatureSettings: "'tnum'" }}>{row.value}</span>
                 </div>
               ))}
@@ -311,11 +311,11 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
             {/* Weak spots */}
             {weakCategories.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 10, opacity: 0.5 }}>─ FOCUS AREAS ─</div>
+                <div style={{ fontSize: 9, letterSpacing: 4, marginBottom: 10 }}>─ FOCUS AREAS ─</div>
                 {weakCategories.map(([cat, count]) => (
                   <div key={cat} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${C}15`, fontSize: 10, letterSpacing: 2 }}>
                     <span>{cat.toUpperCase()}</span>
-                    <span style={{ opacity: 0.6, fontFeatureSettings: "'tnum'" }}>{count} miss{count !== 1 ? "es" : ""}</span>
+                    <span style={{ fontFeatureSettings: "'tnum'" }}>{count} miss{count !== 1 ? "es" : ""}</span>
                   </div>
                 ))}
               </div>

@@ -101,6 +101,10 @@ export default function Landing({ onPlay, username }) {
           <PixelDisplay color="#BC34FB" isHovered={hovered === "dossier"} text="DOSSIER" shape="square" />
         </div>
 
+        <div className="logo-fc" style={{ maxWidth: 200, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("faces")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("faces")}>
+          <PixelDisplay color="#FF2C2F" isHovered={hovered === "faces"} text="FACES" shape="square" />
+        </div>
+
       </div>
 
       {/* BOTTOM BAR */}

@@ -45,6 +45,7 @@ body {
   .logo-ib { width: 27vw !important; max-width: 27vw !important; }
   .logo-im { width: 43vw !important; max-width: 43vw !important; }
   .logo-ds { width: 38vw !important; max-width: 38vw !important; margin: 0 auto !important; }
+  .logo-fc { width: 27vw !important; max-width: 27vw !important; margin: 0 auto !important; }
 
   /* Higher or Lower: compact comparison cards */
   .g-card    { padding: 18px 10px !important; }

@@ -40,7 +40,7 @@ function fmt(v, u) {
   if (u) return v.toLocaleString() + " " + u; return v.toLocaleString();
 }
 
-const BG = "#1F1F1F";
+const BG = "#141413";
 const C = "#FF972D";
 
 // Gamification: streak colors REPLACE the base orange

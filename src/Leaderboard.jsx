@@ -55,7 +55,7 @@ export default function Leaderboard({ onBack, username, topPlayer }) {
   const ranked = getRanked(tab);
 
   return (
-    <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+    <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -93,7 +93,7 @@ export default function Leaderboard({ onBack, username, topPlayer }) {
       </div>
 
       {/* MAIN */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "24px 16px", overflowY: "auto" }}>
+      <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "24px 16px", overflowY: "auto" }}>
         <div style={{ width: "100%", maxWidth: 560 }}>
 
           <div style={{ fontSize: 10, letterSpacing: 6, marginBottom: 4, textAlign: "center" }}>─ LEADERBOARD ─</div>

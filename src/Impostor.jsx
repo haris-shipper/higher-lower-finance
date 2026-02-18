@@ -131,7 +131,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
   // ── MENU ──────────────────────────────────────────────────────────────────
   if (phase === "menu") {
     return (
-      <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+      <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -167,7 +167,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
           </div>
         </div>
 
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px" }}>
+        <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px" }}>
           <div style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
             <PixelDisplay color={C} text="IMPOSTOR" shape="decagon" style={{ marginBottom: 28 }} />
             <div style={{ border: `1px solid ${C}`, padding: "16px 20px", marginBottom: 20, textAlign: "left" }}>
@@ -201,7 +201,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
   // ── PLAYING ───────────────────────────────────────────────────────────────
   if (phase === "playing" && currentRound) {
     return (
-      <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+      <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -240,7 +240,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
           </div>
         </div>
 
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", position: "relative" }}>
+        <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", position: "relative" }}>
 
           {stamp && (
             <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", fontSize: 80, fontWeight: 700, color: ac, textShadow: `0 0 60px ${ac}80, 0 0 120px ${ac}30`, animation: "stampIn 0.2s ease forwards, stampOut 0.3s ease 0.9s forwards", pointerEvents: "none", zIndex: 30, letterSpacing: 8 }}>{stamp}</div>
@@ -335,7 +335,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
     const impostorSentence = currentRound.sentences.find(s => s.isImpostor);
 
     return (
-      <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+      <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -373,7 +373,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
           </div>
         </div>
 
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "20px 16px", overflowY: "auto" }}>
+        <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "20px 16px", overflowY: "auto" }}>
           <div style={{ width: "100%", maxWidth: 600, animation: "revealV 0.2s ease" }}>
 
             {/* Score */}
@@ -449,7 +449,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
     const correctCount = history.filter(h => h.correct).length;
 
     return (
-      <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
+      <div className="page-root" style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -487,7 +487,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
           </div>
         </div>
 
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "20px 16px", overflowY: "auto" }}>
+        <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "20px 16px", overflowY: "auto" }}>
           <div style={{ width: "100%", maxWidth: 600 }}>
 
             <div style={{ fontSize: 10, letterSpacing: 6, marginBottom: 4, textAlign: "center" }}>─ FULL RUN DEBRIEF ─</div>

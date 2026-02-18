@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import PixelDisplay from "./PixelDisplay.jsx";
 import { ROUNDS } from "./impostorData.js";
 
@@ -6,17 +6,19 @@ const BG = "#141413";
 const C = "#48D7FF";
 const ERR = "#FF2D2D";
 const WIN = "#2DFF72";
-const CARD_BG = "#1A1A18";
 
+// Exact same tier system as every other game
 const TIERS = [
-  { min: 0,  mult: 1,  color: C },
-  { min: 3,  mult: 2,  color: "#FFD166" },
-  { min: 5,  mult: 4,  color: "#FF972D" },
-  { min: 8,  mult: 8,  color: "#FF6B6B" },
-  { min: 10, mult: 16, color: "#C44BFF" },
-  { min: 13, mult: 32, color: "#FF2D2D" },
+  { min: 0,  color: C,         label: "" },
+  { min: 3,  color: "#D1FF2D", label: "STREAK" },
+  { min: 5,  color: "#2DFBFF", label: "HOT" },
+  { min: 8,  color: "#2D70FF", label: "ON FIRE" },
+  { min: 10, color: "#D82DFF", label: "LEGENDARY" },
+  { min: 13, color: "#FF2D50", label: "GODMODE" },
 ];
-const getTier = (combo) => [...TIERS].reverse().find(t => combo >= t.min) || TIERS[0];
+function getTier(s) { let t = TIERS[0]; for (const c of TIERS) if (s >= c.min) t = c; return t; }
+
+function shuf(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 
 const getTZTime = (tz) => new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 const isMktOpen = (tz, oh, om, ch, cm) => {
@@ -27,15 +29,6 @@ const isMktOpen = (tz, oh, om, ch, cm) => {
   return mins >= oh * 60 + om && mins < ch * 60 + cm;
 };
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 function HighlightTerm({ text, term, color }) {
   if (!term) return <span>{text}</span>;
   const re = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
@@ -43,44 +36,11 @@ function HighlightTerm({ text, term, color }) {
   return (
     <span>
       {parts.map((p, i) =>
-        re.test(p) ? <span key={i} style={{ color, fontWeight: 700 }}>{p}</span> : <span key={i}>{p}</span>
+        re.test(p)
+          ? <span key={i} style={{ color, fontWeight: 700 }}>{p}</span>
+          : <span key={i}>{p}</span>
       )}
     </span>
-  );
-}
-
-function TopBar({ tick }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2, color: C }}>
-      <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
-        {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
-          <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
-        ))}
-      </div>
-      <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
-      <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
-        {[
-          { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
-          { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
-          { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
-        ].map(({ label, tz, oh, om, ch, cm }) => {
-          const open = isMktOpen(tz, oh, om, ch, cm);
-          return (
-            <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function BottomBar({ onBack }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0, color: C }}>
-      <span style={{ cursor: "pointer", opacity: 0.6 }} onClick={onBack}>← HOME</span>
-      <span>QUARTR LABS GAMES</span>
-      <span>○ IMPOSTOR</span>
-    </div>
   );
 }
 
@@ -89,60 +49,75 @@ export default function Impostor({ onBack }) {
   const [rounds, setRounds] = useState([]);
   const [roundIdx, setRoundIdx] = useState(0);
   const [sentenceOrder, setSentenceOrder] = useState([0, 1, 2, 3]);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(null);      // display index of clicked card
+  const [streak, setStreak] = useState(0);
   const [score, setScore] = useState(0);
-  const [combo, setCombo] = useState(0);
-  const [stampKey, setStampKey] = useState(0);
-  const [history, setHistory] = useState([]);
+  const [cmb, setCmb] = useState(1);
+  const [stamp, setStamp] = useState(null);
+  const [lastPts, setLastPts] = useState(null);
+  const [history, setHistory] = useState([]);           // { round, sentenceOrder, selectedDisplayIdx, correct }
   const [, setTick] = useState(0);
+  const tmr = useRef(null);
 
-  useEffect(() => {
-    const iv = setInterval(() => setTick(t => t + 1), 1000);
-    return () => clearInterval(iv);
-  }, []);
+  useEffect(() => { const iv = setInterval(() => setTick(t => t + 1), 1000); return () => clearInterval(iv); }, []);
+  useEffect(() => () => { if (tmr.current) clearTimeout(tmr.current); }, []);
 
   const currentRound = rounds[roundIdx];
-  const tier = getTier(combo);
+  const t = getTier(streak);
+  const ac = t.color;
 
   function startGame() {
-    const pool = shuffle([...ROUNDS]).slice(0, 40);
+    const pool = shuf([...ROUNDS]).slice(0, 40);
     setRounds(pool);
     setRoundIdx(0);
-    setSentenceOrder(shuffle([0, 1, 2, 3]));
+    setSentenceOrder(shuf([0, 1, 2, 3]));
     setSelected(null);
+    setStreak(0);
     setScore(0);
-    setCombo(0);
+    setCmb(1);
+    setStamp(null);
+    setLastPts(null);
     setHistory([]);
     setPhase("playing");
   }
 
-  function pick(displayIdx) {
+  const pick = useCallback((displayIdx) => {
     if (phase !== "playing" || selected !== null) return;
     const sentIdx = sentenceOrder[displayIdx];
     const s = currentRound.sentences[sentIdx];
     setSelected(displayIdx);
 
     if (s.isImpostor) {
-      const newCombo = combo + 1;
-      const pts = 100 * tier.mult;
+      const newStreak = streak + 1;
+      const newMult = Math.min(Math.floor(newStreak / 3) + 1, 5);
+      const pts = 100 * cmb;
+      setStreak(newStreak);
+      setCmb(newMult);
       setScore(sc => sc + pts);
-      setCombo(newCombo);
-      if (getTier(newCombo).mult !== tier.mult) setStampKey(k => k + 1);
+      setLastPts(pts);
+      if (newStreak >= 3 && newStreak % 3 === 0) {
+        setStamp(newMult + "x");
+        tmr.current = setTimeout(() => setStamp(null), 1200);
+      }
       setHistory(h => [...h, { round: currentRound, sentenceOrder, selectedDisplayIdx: displayIdx, correct: true }]);
-      setTimeout(() => {
+
+      tmr.current = setTimeout(() => {
         setSelected(null);
+        setLastPts(null);
         setRoundIdx(prev => {
           const next = prev + 1;
           if (next >= rounds.length) { setPhase("debrief"); return prev; }
-          setSentenceOrder(shuffle([0, 1, 2, 3]));
+          setSentenceOrder(shuf([0, 1, 2, 3]));
           return next;
         });
       }, 1200);
     } else {
+      setStreak(0);
+      setCmb(1);
       setHistory(h => [...h, { round: currentRound, sentenceOrder, selectedDisplayIdx: displayIdx, correct: false }]);
-      setTimeout(() => setPhase("dead"), 400);
+      tmr.current = setTimeout(() => setPhase("dead"), 350);
     }
-  }
+  }, [phase, selected, sentenceOrder, currentRound, streak, cmb, rounds.length]);
 
   // ── MENU ──────────────────────────────────────────────────────────────────
   if (phase === "menu") {
@@ -152,125 +127,185 @@ export default function Impostor({ onBack }) {
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
           @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
+          .xb{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:0.15em;padding:16px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
+          .xb:hover{background:${C};color:${BG};}
+          .xb:active{transform:scale(0.96);}
         `}</style>
-        <TopBar />
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 40, padding: "40px 20px" }}>
-          <div style={{ maxWidth: 440, width: "100%" }}>
-            <PixelDisplay color={C} text="IMPOSTOR" shape="decagon" />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
+            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+            ))}
           </div>
-          <div style={{ fontSize: 11, letterSpacing: 2, opacity: 0.55, textAlign: "center", maxWidth: 420, lineHeight: 2 }}>
-            FOUR SENTENCES. ONE USES THE TERM WRONG.<br />SPOT THE IMPOSTOR.
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+            {[
+              { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
+              { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
+              { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
+            ].map(({ label, tz, oh, om, ch, cm }) => {
+              const open = isMktOpen(tz, oh, om, ch, cm);
+              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
+            })}
           </div>
-          <button
-            onClick={startGame}
-            style={{ background: "transparent", border: `1px solid ${C}`, color: C, fontFamily: "inherit", fontSize: 11, letterSpacing: 3, padding: "12px 40px", cursor: "pointer" }}
-          >
-            START
-          </button>
         </div>
-        <BottomBar onBack={onBack} />
+
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px" }}>
+          <div style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
+            <PixelDisplay color={C} text="IMPOSTOR" shape="decagon" style={{ marginBottom: 28 }} />
+            <div style={{ border: `1px solid ${C}`, padding: "16px 20px", marginBottom: 20, textAlign: "left" }}>
+              <div style={{ fontSize: 10, letterSpacing: 4, marginBottom: 10 }}>─ BRIEFING ─</div>
+              {[
+                "Four sentences, each using a finance term",
+                "Three use the term correctly. One does not.",
+                "Tap the sentence where the term is wrong",
+                "No timer — read carefully, think clearly",
+                "Correct streaks unlock score multipliers",
+                "One wrong answer ends the session",
+              ].map((txt, j) => (
+                <div key={j} style={{ fontSize: 11, lineHeight: 2.2, display: "flex", gap: 10 }}>
+                  <span>{String(j + 1).padStart(2, "0")}</span><span>{txt}</span>
+                </div>
+              ))}
+            </div>
+            <button className="xb" onClick={startGame} style={{ width: "100%", letterSpacing: 8 }}>INITIATE</button>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
+          <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
+          <span>IMPOSTOR V1.0</span>
+          <span>○ STANDBY</span>
+        </div>
       </div>
     );
   }
 
   // ── PLAYING ───────────────────────────────────────────────────────────────
   if (phase === "playing" && currentRound) {
-    const tierColor = tier.color;
     return (
       <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+          @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
           @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
-          @keyframes stampIn{0%{transform:scale(3);opacity:0}60%{transform:scale(0.9);opacity:1}100%{transform:scale(1);opacity:1}}
-          @keyframes cardFlash{0%{background:#1A1A18}50%{background:#0D2E1A}100%{background:#1A1A18}}
+          @keyframes fadeUp{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-20px)}}
+          @keyframes stampIn{0%{opacity:0;transform:translate(-50%,-50%) scale(5)}30%{opacity:1;transform:translate(-50%,-50%) scale(0.95)}100%{transform:translate(-50%,-50%) scale(1)}}
+          @keyframes stampOut{from{opacity:1}to{opacity:0;transform:translate(-50%,-50%) scale(0.85) translateY(-10px)}}
+          @keyframes revealV{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
         `}</style>
-        <TopBar />
 
-        {/* HUD */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 20px", borderBottom: `1px solid ${C}22`, fontSize: 10, letterSpacing: 2 }}>
-          <div>
-            <span style={{ opacity: 0.5 }}>ROUND </span>
-            <span style={{ fontWeight: 700 }}>{roundIdx + 1}</span>
-            <span style={{ opacity: 0.5 }}> / {rounds.length}</span>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
+            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+            ))}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ opacity: 0.5, fontSize: 8, letterSpacing: 3 }}>COMBO</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: tierColor }}>{combo}</div>
-            </div>
-            <div key={stampKey} style={{ fontSize: 22, fontWeight: 700, color: tierColor, animation: stampKey > 0 ? "stampIn 0.5s ease forwards" : "none", letterSpacing: 1 }}>
-              ×{tier.mult}
-            </div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ opacity: 0.5, fontSize: 8, letterSpacing: 3 }}>SCORE</div>
-            <div style={{ fontSize: 14, fontWeight: 700, fontFeatureSettings: "'tnum'" }}>{score.toLocaleString()}</div>
-          </div>
-        </div>
-
-        {/* Instruction */}
-        <div style={{ textAlign: "center", padding: "16px 20px 8px", fontSize: 9, letterSpacing: 3, opacity: 0.4 }}>
-          WHICH SENTENCE USES THE HIGHLIGHTED TERM INCORRECTLY?
-        </div>
-
-        {/* Cards */}
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 24px 24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, maxWidth: 860, width: "100%" }}>
-            {sentenceOrder.map((sentIdx, displayIdx) => {
-              const s = currentRound.sentences[sentIdx];
-              let borderColor = `${C}33`;
-              let bg = CARD_BG;
-              let opacity = 1;
-              let textDecoration = "none";
-
-              if (selected !== null) {
-                if (displayIdx === selected) {
-                  // What player clicked
-                  borderColor = s.isImpostor ? WIN : ERR;
-                  bg = s.isImpostor ? "#0D2A1A" : "#2A0D0D";
-                } else if (s.isImpostor && !currentRound.sentences[sentenceOrder[selected]].isImpostor) {
-                  // Real impostor not clicked — stay neutral
-                }
-              }
-
-              return (
-                <div
-                  key={displayIdx}
-                  onClick={() => pick(displayIdx)}
-                  style={{
-                    background: bg,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: 3,
-                    padding: "22px 24px",
-                    cursor: selected === null ? "pointer" : "default",
-                    fontSize: 13,
-                    lineHeight: 1.75,
-                    letterSpacing: 0.3,
-                    opacity,
-                    transition: "border-color 0.2s ease, background 0.2s ease",
-                    minHeight: 120,
-                  }}
-                  onMouseEnter={e => { if (selected === null) e.currentTarget.style.borderColor = C; }}
-                  onMouseLeave={e => { if (selected === null) e.currentTarget.style.borderColor = `${C}33`; }}
-                >
-                  <HighlightTerm text={s.text} term={s.term} color={selected !== null ? (s.isImpostor ? ERR : C) : C} />
-                </div>
-              );
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+            {[
+              { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
+              { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
+              { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
+            ].map(({ label, tz, oh, om, ch, cm }) => {
+              const open = isMktOpen(tz, oh, om, ch, cm);
+              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
             })}
           </div>
         </div>
 
-        <BottomBar onBack={onBack} />
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px", position: "relative" }}>
+
+          {stamp && (
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", fontSize: 80, fontWeight: 700, color: ac, textShadow: `0 0 60px ${ac}80, 0 0 120px ${ac}30`, animation: "stampIn 0.2s ease forwards, stampOut 0.3s ease 0.9s forwards", pointerEvents: "none", zIndex: 30, letterSpacing: 8 }}>{stamp}</div>
+          )}
+
+          <div style={{ width: "100%", maxWidth: 600 }}>
+
+            {/* HUD — exact same layout as other games */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16, fontSize: 12, fontFeatureSettings: "'tnum'" }}>
+              <div>
+                <span>SCORE </span>
+                <span style={{ fontWeight: 700, fontSize: 18, color: streak >= 3 ? ac : C, transition: "color 0.3s" }}>{score}</span>
+                {lastPts && <span style={{ fontSize: 11, marginLeft: 8, color: ac, animation: "fadeUp 1s ease forwards" }}>+{lastPts}</span>}
+              </div>
+              <div>
+                <span>STREAK </span>
+                <span style={{ fontWeight: 700, fontSize: 18, color: streak >= 3 ? ac : C, textShadow: streak >= 3 ? `0 0 12px ${ac}60` : "none", transition: "all 0.3s" }}>{streak}</span>
+                {streak >= 3 && <span style={{ fontSize: 9, marginLeft: 6, letterSpacing: 3, color: ac, animation: "blink 1.5s step-end infinite" }}>{t.label}</span>}
+              </div>
+              <div>
+                <span>MULTI </span>
+                <span style={{ fontWeight: 700, fontSize: 18, color: cmb > 1 ? ac : C }}>{cmb}x</span>
+              </div>
+            </div>
+
+            {/* Round label + counter */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 10, letterSpacing: 4 }}>
+              <span>─ SPOT THE IMPOSTOR ─</span>
+              <span style={{ fontFeatureSettings: "'tnum'", opacity: 0.5 }}>{String(roundIdx + 1).padStart(2, "0")}/{String(rounds.length).padStart(2, "0")}</span>
+            </div>
+
+            {/* 2×2 sentence card grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {sentenceOrder.map((sentIdx, displayIdx) => {
+                const s = currentRound.sentences[sentIdx];
+                let borderColor = `${C}20`;
+                let termColor = C;
+
+                if (selected !== null) {
+                  if (displayIdx === selected) {
+                    const wasCorrect = s.isImpostor;
+                    borderColor = wasCorrect ? WIN : ERR;
+                    termColor = wasCorrect ? WIN : ERR;
+                  }
+                }
+
+                return (
+                  <div
+                    key={displayIdx}
+                    onClick={() => pick(displayIdx)}
+                    style={{
+                      border: `1px solid ${borderColor}`,
+                      padding: "20px 18px",
+                      cursor: selected === null ? "pointer" : "default",
+                      fontSize: 12,
+                      lineHeight: 1.8,
+                      letterSpacing: 0.2,
+                      transition: "border-color 0.15s ease",
+                      minHeight: 110,
+                    }}
+                    onMouseEnter={e => { if (selected === null) e.currentTarget.style.borderColor = `${C}70`; }}
+                    onMouseLeave={e => { if (selected === null) e.currentTarget.style.borderColor = `${C}20`; }}
+                  >
+                    <HighlightTerm text={s.text} term={s.term} color={termColor} />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ height: 2, background: `${C}15`, marginTop: 6 }}>
+              <div style={{ height: "100%", width: `${((roundIdx + (selected !== null ? 1 : 0)) / rounds.length) * 100}%`, background: streak >= 3 ? ac : C, transition: "all 0.5s", boxShadow: streak >= 3 ? `0 0 8px ${ac}60` : "none" }} />
+            </div>
+
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
+          <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
+          <span>IMPOSTOR V1.0</span>
+          <span>● ACTIVE</span>
+        </div>
       </div>
     );
   }
 
   // ── DEAD ──────────────────────────────────────────────────────────────────
   if (phase === "dead" && currentRound) {
-    const wrongDisplayIdx = history[history.length - 1]?.selectedDisplayIdx;
-    const wrongSentIdx = sentenceOrder[wrongDisplayIdx];
-    const impostorDisplayIdx = sentenceOrder.findIndex(si => currentRound.sentences[si].isImpostor);
+    const lastEntry = history[history.length - 1];
+    const wrongDisplayIdx = lastEntry?.selectedDisplayIdx;
     const impostorSentence = currentRound.sentences.find(s => s.isImpostor);
 
     return (
@@ -279,85 +314,105 @@ export default function Impostor({ onBack }) {
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
           @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
+          @keyframes revealV{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
+          .xb{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.12em;padding:14px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
+          .xb:hover{background:${C};color:${BG};}
+          .xb:active{transform:scale(0.96);}
         `}</style>
-        <TopBar />
 
-        <div style={{ padding: "20px 28px 8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 13, letterSpacing: 4, color: ERR, fontWeight: 700 }}>× WRONG</div>
-          <div style={{ fontSize: 10, letterSpacing: 2, opacity: 0.5 }}>ROUND {roundIdx + 1} · SCORE {score.toLocaleString()}</div>
-        </div>
-
-        {/* Cards */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "12px 24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, maxWidth: 860, width: "100%" }}>
-            {sentenceOrder.map((sentIdx, displayIdx) => {
-              const s = currentRound.sentences[sentIdx];
-              const isPlayerPick = displayIdx === wrongDisplayIdx;
-              const isRealImpostor = s.isImpostor;
-
-              let borderColor = `${C}22`;
-              let bg = CARD_BG;
-              let termColor = `${C}55`;
-              let textStyle = {};
-
-              if (isPlayerPick && !isRealImpostor) {
-                borderColor = ERR;
-                bg = "#2A0D0D";
-                termColor = ERR;
-                textStyle = { textDecoration: "line-through", opacity: 0.7 };
-              } else if (isRealImpostor) {
-                borderColor = "#FFD16699";
-                bg = "#2A220D";
-                termColor = "#FFD166";
-              }
-
-              return (
-                <div key={displayIdx} style={{ background: bg, border: `1px solid ${borderColor}`, borderRadius: 3, padding: "18px 20px", fontSize: 12, lineHeight: 1.75, letterSpacing: 0.3, ...textStyle }}>
-                  <HighlightTerm text={s.text} term={s.term} color={termColor} />
-                  {isRealImpostor && (
-                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${borderColor}`, fontSize: 10, letterSpacing: 0.5, color: "#FFD166", textDecoration: "none" }}>
-                      ← THE IMPOSTOR
-                    </div>
-                  )}
-                </div>
-              );
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
+            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+            ))}
+          </div>
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+            {[
+              { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
+              { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
+              { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
+            ].map(({ label, tz, oh, om, ch, cm }) => {
+              const open = isMktOpen(tz, oh, om, ch, cm);
+              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
             })}
           </div>
         </div>
 
-        {/* Explanation */}
-        <div style={{ maxWidth: 860, width: "100%", margin: "0 auto", padding: "0 24px 16px" }}>
-          <div style={{ border: `1px solid ${C}22`, borderRadius: 3, padding: "18px 20px", background: CARD_BG }}>
-            <div style={{ fontSize: 9, letterSpacing: 3, opacity: 0.5, marginBottom: 8 }}>WHY IT'S WRONG</div>
-            <div style={{ fontSize: 12, lineHeight: 1.8, letterSpacing: 0.3, opacity: 0.9 }}>{impostorSentence?.reason}</div>
-            {impostorSentence?.fix && (
-              <>
-                <div style={{ fontSize: 9, letterSpacing: 3, opacity: 0.5, marginTop: 14, marginBottom: 6 }}>CORRECT VERSION</div>
-                <div style={{ fontSize: 12, lineHeight: 1.8, letterSpacing: 0.3, color: WIN }}>{impostorSentence.fix}</div>
-              </>
-            )}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "20px 16px", overflowY: "auto" }}>
+          <div style={{ width: "100%", maxWidth: 600, animation: "revealV 0.2s ease" }}>
+
+            {/* Score */}
+            <div style={{ fontSize: 10, letterSpacing: 6, marginBottom: 16, color: ERR, textAlign: "center" }}>─ TERMINATED ─</div>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <div style={{ fontSize: 56, fontWeight: 700, letterSpacing: 4, fontFeatureSettings: "'tnum'" }}>{score}</div>
+              <div style={{ fontSize: 9, letterSpacing: 5, opacity: 0.5 }}>TOTAL SCORE · {roundIdx + 1} ROUND{roundIdx !== 0 ? "S" : ""}</div>
+            </div>
+
+            {/* 4 cards — outline only, no fill */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 12 }}>
+              {sentenceOrder.map((sentIdx, displayIdx) => {
+                const s = currentRound.sentences[sentIdx];
+                const isPlayerPick = displayIdx === wrongDisplayIdx;
+                const isRealImpostor = s.isImpostor;
+
+                let borderColor = `${C}15`;
+                let termColor = `${C}40`;
+
+                if (isPlayerPick && !isRealImpostor) {
+                  borderColor = ERR;
+                  termColor = ERR;
+                } else if (isRealImpostor) {
+                  borderColor = `${C}60`;
+                  termColor = C;
+                }
+
+                return (
+                  <div key={displayIdx} style={{ border: `1px solid ${borderColor}`, padding: "16px 16px", fontSize: 11, lineHeight: 1.8, letterSpacing: 0.2, transition: "none" }}>
+                    <HighlightTerm text={s.text} term={s.term} color={termColor} />
+                    {isPlayerPick && !isRealImpostor && (
+                      <div style={{ marginTop: 8, fontSize: 9, letterSpacing: 3, color: ERR }}>← YOU ACCUSED THIS</div>
+                    )}
+                    {isRealImpostor && (
+                      <div style={{ marginTop: 8, fontSize: 9, letterSpacing: 3, color: C }}>← THE IMPOSTOR</div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Explanation — same as H/L debrief panel */}
+            <div style={{ border: `1px solid ${ERR}`, padding: "18px 20px", marginBottom: 16, animation: "revealV 0.25s ease" }}>
+              <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 14, color: ERR }}>─ DEBRIEF ─</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, opacity: 0.45, marginBottom: 5 }}>WHY IT'S WRONG</div>
+              <div style={{ fontSize: 11, lineHeight: 1.8, marginBottom: 14 }}>{impostorSentence?.reason}</div>
+              {impostorSentence?.fix && (
+                <>
+                  <div style={{ fontSize: 9, letterSpacing: 3, opacity: 0.45, marginBottom: 5 }}>CORRECT VERSION</div>
+                  <div style={{ fontSize: 11, lineHeight: 1.8, color: WIN }}>{impostorSentence.fix}</div>
+                </>
+              )}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              <button className="xb" onClick={startGame} style={{ letterSpacing: 4, fontSize: 11 }}>PLAY AGAIN</button>
+              <button className="xb" onClick={() => setPhase("debrief")} style={{ letterSpacing: 4, fontSize: 11 }}>DEBRIEF</button>
+            </div>
           </div>
         </div>
 
-        {/* Buttons */}
-        <div style={{ display: "flex", gap: 16, justifyContent: "center", padding: "8px 24px 20px" }}>
-          <button onClick={startGame} style={{ background: "transparent", border: `1px solid ${C}`, color: C, fontFamily: "inherit", fontSize: 10, letterSpacing: 3, padding: "10px 28px", cursor: "pointer" }}>
-            PLAY AGAIN
-          </button>
-          <button onClick={() => setPhase("debrief")} style={{ background: "transparent", border: `1px solid ${C}44`, color: C, fontFamily: "inherit", fontSize: 10, letterSpacing: 3, padding: "10px 28px", cursor: "pointer", opacity: 0.6 }}>
-            DEBRIEF
-          </button>
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
+          <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
+          <span>IMPOSTOR V1.0</span>
+          <span>○ STANDBY</span>
         </div>
-
-        <BottomBar onBack={onBack} />
       </div>
     );
   }
 
   // ── DEBRIEF ───────────────────────────────────────────────────────────────
   if (phase === "debrief") {
-    const roundsCompleted = history.length;
-    const correct = history.filter(h => h.correct).length;
+    const correctCount = history.filter(h => h.correct).length;
 
     return (
       <div style={{ fontFamily: "'IBM Plex Mono',monospace", background: BG, color: C, minHeight: "100vh", display: "flex", flexDirection: "column", userSelect: "none" }}>
@@ -365,81 +420,95 @@ export default function Impostor({ onBack }) {
           @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
           *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
           @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
+          @keyframes revealV{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
+          .xb{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.12em;padding:14px 0;background:transparent;color:${C};border:1px solid ${C};cursor:pointer;transition:all 0.12s;}
+          .xb:hover{background:${C};color:${BG};}
+          .xb:active{transform:scale(0.96);}
         `}</style>
-        <TopBar />
 
-        {/* Summary */}
-        <div style={{ padding: "20px 28px 16px", borderBottom: `1px solid ${C}22`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 11, letterSpacing: 3 }}>DEBRIEF</div>
-          <div style={{ display: "flex", gap: 32, fontSize: 10, letterSpacing: 2 }}>
-            <span><span style={{ opacity: 0.5 }}>SCORE </span><span style={{ fontWeight: 700 }}>{score.toLocaleString()}</span></span>
-            <span><span style={{ opacity: 0.5 }}>CORRECT </span><span style={{ fontWeight: 700, color: WIN }}>{correct}</span><span style={{ opacity: 0.4 }}>/{roundsCompleted}</span></span>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-start" }}>
+            {[["STOCKHOLM", "Europe/Stockholm"], ["DUBLIN", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
+              <span key={label}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
+            ))}
           </div>
-          <button onClick={startGame} style={{ background: "transparent", border: `1px solid ${C}`, color: C, fontFamily: "inherit", fontSize: 9, letterSpacing: 3, padding: "8px 20px", cursor: "pointer" }}>
-            PLAY AGAIN
-          </button>
+          <div style={{ fontSize: 10, letterSpacing: 4 }}>A QUARTR LABS GAME</div>
+          <div style={{ display: "flex", gap: 16, flex: 1, justifyContent: "flex-end" }}>
+            {[
+              { label: "NASDAQ", tz: "America/New_York", oh: 9, om: 30, ch: 16, cm: 0 },
+              { label: "LSE",    tz: "Europe/London",    oh: 8, om: 0,  ch: 16, cm: 30 },
+              { label: "STO",    tz: "Europe/Stockholm", oh: 9, om: 0,  ch: 17, cm: 30 },
+            ].map(({ label, tz, oh, om, ch, cm }) => {
+              const open = isMktOpen(tz, oh, om, ch, cm);
+              return <span key={label}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
+            })}
+          </div>
         </div>
 
-        {/* Rounds */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "16px 28px 24px", display: "flex", flexDirection: "column", gap: 24 }}>
-          {history.map((entry, hi) => {
-            const { round, sentenceOrder: so, selectedDisplayIdx, correct: wasCorrect } = entry;
-            const impostorSentence = round.sentences.find(s => s.isImpostor);
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", padding: "20px 16px", overflowY: "auto" }}>
+          <div style={{ width: "100%", maxWidth: 600 }}>
 
-            return (
-              <div key={hi} style={{ borderBottom: `1px solid ${C}11`, paddingBottom: 20 }}>
-                <div style={{ fontSize: 9, letterSpacing: 3, opacity: 0.4, marginBottom: 10 }}>
-                  ROUND {hi + 1} · TIER {round.tier} · {wasCorrect ? <span style={{ color: WIN }}>✓ CORRECT</span> : <span style={{ color: ERR }}>✗ WRONG</span>}
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  {so.map((sentIdx, displayIdx) => {
-                    const s = round.sentences[sentIdx];
-                    const isPlayerPick = displayIdx === selectedDisplayIdx;
-                    const isRealImpostor = s.isImpostor;
+            <div style={{ fontSize: 10, letterSpacing: 6, marginBottom: 4, textAlign: "center" }}>─ FULL RUN DEBRIEF ─</div>
+            <div style={{ fontSize: 9, letterSpacing: 3, marginBottom: 20, textAlign: "center", opacity: 0.4 }}>
+              {history.length} ROUND{history.length !== 1 ? "S" : ""} · SCORE {score} · {correctCount} CORRECT
+            </div>
 
-                    let borderColor = `${C}18`;
-                    let bg = "#16160F";
-                    let termColor = `${C}66`;
+            {history.map((entry, hi) => {
+              const { round, sentenceOrder: so, selectedDisplayIdx, correct: wasCorrect } = entry;
+              const impostorSentence = round.sentences.find(s => s.isImpostor);
+              const isDeath = !wasCorrect;
 
-                    if (isRealImpostor && wasCorrect && isPlayerPick) {
-                      borderColor = WIN + "88";
-                      bg = "#0D1F0D";
-                      termColor = WIN;
-                    } else if (isRealImpostor && !wasCorrect) {
-                      borderColor = "#FFD16666";
-                      bg = "#1F1A0D";
-                      termColor = "#FFD166";
-                    } else if (isPlayerPick && !wasCorrect) {
-                      borderColor = ERR + "66";
-                      bg = "#1F0D0D";
-                      termColor = ERR;
-                    }
-
-                    return (
-                      <div key={displayIdx} style={{ background: bg, border: `1px solid ${borderColor}`, borderRadius: 3, padding: "12px 14px", fontSize: 11, lineHeight: 1.7, letterSpacing: 0.2 }}>
-                        <HighlightTerm text={s.text} term={s.term} color={termColor} />
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {!wasCorrect && (
-                  <div style={{ marginTop: 10, padding: "12px 14px", background: "#1A1A18", border: `1px solid ${C}18`, borderRadius: 3, fontSize: 10, lineHeight: 1.7, letterSpacing: 0.3, opacity: 0.8 }}>
-                    <span style={{ color: "#FFD166", fontWeight: 700 }}>WHY: </span>{impostorSentence?.reason}
+              if (isDeath) {
+                return (
+                  <div key={hi} style={{ border: `1px solid ${ERR}50`, padding: "14px", marginBottom: 16, animation: "revealV 0.3s ease" }}>
+                    <div style={{ fontSize: 8, letterSpacing: 4, color: ERR, marginBottom: 10 }}>✗ WRONG — ROUND {String(hi + 1).padStart(2, "0")}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5, marginBottom: 10 }}>
+                      {so.map((sentIdx, displayIdx) => {
+                        const s = round.sentences[sentIdx];
+                        const isPlayerPick = displayIdx === selectedDisplayIdx;
+                        const isRealImpostor = s.isImpostor;
+                        let borderColor = `${C}12`;
+                        let termColor = `${C}35`;
+                        if (isPlayerPick && !isRealImpostor) { borderColor = ERR + "80"; termColor = ERR; }
+                        else if (isRealImpostor) { borderColor = `${C}50`; termColor = C; }
+                        return (
+                          <div key={displayIdx} style={{ border: `1px solid ${borderColor}`, padding: "10px 12px", fontSize: 10, lineHeight: 1.7, letterSpacing: 0.2 }}>
+                            <HighlightTerm text={s.text} term={s.term} color={termColor} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div style={{ fontSize: 9, letterSpacing: 2, marginBottom: 6, opacity: 0.45 }}>WHY IT'S WRONG</div>
+                    <div style={{ fontSize: 10, lineHeight: 1.7, marginBottom: 8, opacity: 0.75 }}>{impostorSentence?.reason}</div>
+                    <div style={{ fontSize: 9, letterSpacing: 2 }}>CORRECT: <span style={{ color: C, fontWeight: 700 }}>{impostorSentence?.fix}</span></div>
                   </div>
-                )}
+                );
+              }
 
-                {wasCorrect && (
-                  <div style={{ marginTop: 8, padding: "8px 14px", fontSize: 10, lineHeight: 1.6, letterSpacing: 0.3, opacity: 0.6 }}>
-                    <span style={{ color: "#FFD166" }}>{impostorSentence?.term}: </span>{impostorSentence?.reason?.split(".")[0]}.
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              // Correct — compact row, like Inbox debrief
+              return (
+                <div key={hi} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 9, padding: "5px 0", borderBottom: `1px solid ${C}10`, gap: 12 }}>
+                  <span style={{ opacity: 0.35, fontFeatureSettings: "'tnum'" }}>{String(hi + 1).padStart(2, "0")}</span>
+                  <span style={{ opacity: 0.55, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                    {impostorSentence?.term}
+                  </span>
+                  <span style={{ color: C, flexShrink: 0, letterSpacing: 2 }}>✓</span>
+                </div>
+              );
+            })}
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 16 }}>
+              <button className="xb" onClick={startGame} style={{ letterSpacing: 4, fontSize: 11 }}>PLAY AGAIN</button>
+              <button className="xb" onClick={onBack} style={{ letterSpacing: 4, fontSize: 11 }}>← HOME</button>
+            </div>
+          </div>
         </div>
 
-        <BottomBar onBack={onBack} />
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
+          <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
+          <span>IMPOSTOR V1.0</span>
+          <span>○ STANDBY</span>
+        </div>
       </div>
     );
   }

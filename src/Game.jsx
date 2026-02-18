@@ -175,15 +175,15 @@ export default function Game({ onBack, username, topPlayer, onLeaderboard }) {
 
       {/* ═══ TOP BAR ═══ */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
-        <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
+        <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
           <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
           <span style={{ opacity: 0.25 }}>|</span>
           {[["STO", "Europe/Stockholm"], ["DUB", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
             <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
-        <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
+        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
+        <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
           {topPlayer && (
             <>
               <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
@@ -294,7 +294,7 @@ export default function Game({ onBack, username, topPlayer, onLeaderboard }) {
             {/* Cards */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", border: `1px solid ${rv ? (res ? ac : ERR) : C}`, transition: "border-color 0.3s" }}>
               {/* KNOWN */}
-              <div style={{ borderRight: `1px solid ${rv ? (res ? ac : ERR) : C}`, padding: "32px 20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transition: "border-color 0.3s" }}>
+              <div className="g-card" style={{ borderRight: `1px solid ${rv ? (res ? ac : ERR) : C}`, padding: "32px 20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", transition: "border-color 0.3s" }}>
                 <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 14 }}>KNOWN</div>
                 <div style={{ fontSize: 13, textAlign: "center", lineHeight: 1.5, marginBottom: 20 }}>{q.a.l}</div>
                 <div style={{ fontSize: "clamp(32px, 6vw, 48px)", fontWeight: 700, fontFeatureSettings: "'tnum'", letterSpacing: 2 }}>
@@ -303,7 +303,7 @@ export default function Game({ onBack, username, topPlayer, onLeaderboard }) {
               </div>
 
               {/* UNKNOWN */}
-              <div style={{ padding: "32px 20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+              <div className="g-card" style={{ padding: "32px 20px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                 <div style={{ fontSize: 9, letterSpacing: 5, marginBottom: 14, color: rv ? (res ? ac : ERR) : C, transition: "color 0.3s" }}>
                   {rv ? (res ? "✓ CORRECT" : "✗ WRONG") : "CLASSIFIED"}
                 </div>

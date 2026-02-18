@@ -193,15 +193,15 @@ export default function Inbox({ onBack, username, topPlayer, onLeaderboard }) {
 
       {/* TOP BAR */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
-        <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
+        <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
           <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
           <span style={{ opacity: 0.25 }}>|</span>
           {[["STO", "Europe/Stockholm"], ["DUB", "Europe/Dublin"], ["NYC", "America/New_York"]].map(([label, tz]) => (
             <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
-        <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
+        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
+        <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
           {topPlayer && (
             <>
               <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
@@ -296,19 +296,19 @@ export default function Inbox({ onBack, username, topPlayer, onLeaderboard }) {
             </div>
 
             {/* Message text */}
-            <div style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 24, padding: "20px", border: `1px solid ${C}30`, minHeight: 100 }}>
+            <div className="i-msg" style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 24, padding: "20px", border: `1px solid ${C}30`, minHeight: 100 }}>
               {currentMsg.text}
             </div>
 
             {/* Bucket buttons */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, marginBottom: 4 }}>
               {BUCKETS.slice(0, 3).map(b => (
-                <button key={b.key} className="ib" onClick={() => pickBucket(b.key)} style={{ padding: "14px 4px", fontSize: 10, letterSpacing: 2 }}>{b.label}</button>
+                <button key={b.key} className="ib i-btn" onClick={() => pickBucket(b.key)} style={{ padding: "14px 4px", fontSize: 10, letterSpacing: 2 }}>{b.label}</button>
               ))}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
               {BUCKETS.slice(3).map(b => (
-                <button key={b.key} className="ib" onClick={() => pickBucket(b.key)} style={{ padding: "14px 4px", fontSize: 10, letterSpacing: 2 }}>{b.label}</button>
+                <button key={b.key} className="ib i-btn" onClick={() => pickBucket(b.key)} style={{ padding: "14px 4px", fontSize: 10, letterSpacing: 2 }}>{b.label}</button>
               ))}
             </div>
           </div>

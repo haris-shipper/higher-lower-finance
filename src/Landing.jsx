@@ -39,7 +39,7 @@ export default function Landing({ onPlay, username }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
 
         {/* LEFT: leaderboard link + clocks */}
-        <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
+        <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
           <span
             onClick={() => onPlay("leaderboard")}
             style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }}
@@ -55,10 +55,10 @@ export default function Landing({ onPlay, username }) {
         </div>
 
         {/* CENTER */}
-        <div style={{ fontSize: 10, letterSpacing: 4, flexShrink: 0, padding: "0 20px" }}>QUARTR LABS GAME STUDIO</div>
+        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, flexShrink: 0, padding: "0 20px" }}>QUARTR LABS GAME STUDIO</div>
 
         {/* RIGHT: #1 player + market status */}
-        <div style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
+        <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
           {topPlayer && (
             <>
               <span style={{ whiteSpace: "nowrap", opacity: 0.7 }}>№1 <span style={{ fontWeight: 700, opacity: 1 }}>{topPlayer}</span></span>
@@ -79,7 +79,7 @@ export default function Landing({ onPlay, username }) {
       </div>
 
       {/* MAIN — stacked logos */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 48, padding: "40px 20px" }}>
+      <div className="land-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 48, padding: "40px 20px" }}>
 
         <div style={{ maxWidth: 520, width: "100%", cursor: "pointer" }} onMouseEnter={() => setHovered("finance")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("finance")}>
           <PixelDisplay color="#FF972D" isHovered={hovered === "finance"} text="HIGHER OR LOWER?" shape="square" />

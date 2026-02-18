@@ -11,3 +11,28 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* ── MOBILE ─────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  /* Top bar: hide side panels on mobile */
+  .mob-hide  { display: none !important; }
+  /* Center title expands to fill the bar */
+  .topbar-ctr { flex: 1 !important; text-align: center; padding: 0 !important; }
+
+  /* Landing: tighten logo stack */
+  .land-main { gap: 20px !important; padding: 20px 12px !important; }
+
+  /* Higher or Lower: compact comparison cards */
+  .g-card    { padding: 18px 10px !important; }
+  .g-hudnum  { font-size: 14px !important; }
+
+  /* Connections: compact tiles */
+  .c-tile    { min-height: 52px !important; padding: 8px 4px !important; font-size: 8px !important; }
+
+  /* Inbox: compact message + bucket buttons */
+  .i-msg     { font-size: 13px !important; padding: 14px 12px !important; min-height: unset !important; }
+  .i-btn     { padding: 10px 4px !important; font-size: 9px !important; }
+
+  /* Impostor: compact sentence cards */
+  .x-card    { padding: 14px 10px !important; min-height: 80px !important; font-size: 11px !important; }
+}

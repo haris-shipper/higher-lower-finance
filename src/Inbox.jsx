@@ -92,12 +92,13 @@ export default function Inbox({ onBack, username, topPlayer, onLeaderboard }) {
 
   const startSession = useCallback(() => {
     scoreSubmitted.current = false;
+    const active = MESSAGES.filter(m => !m.skip);
     const ordered = [
-      ...shuf(MESSAGES.filter(m => m.tier === 1)),
-      ...shuf(MESSAGES.filter(m => m.tier === 2)),
-      ...shuf(MESSAGES.filter(m => m.tier === 3)),
-      ...shuf(MESSAGES.filter(m => m.tier === 4)),
-      ...shuf(MESSAGES.filter(m => m.tier === 5)),
+      ...shuf(active.filter(m => m.tier === 1)),
+      ...shuf(active.filter(m => m.tier === 2)),
+      ...shuf(active.filter(m => m.tier === 3)),
+      ...shuf(active.filter(m => m.tier === 4)),
+      ...shuf(active.filter(m => m.tier === 5)),
     ];
     const t = TIER_TIME[ordered[0].tier];
     R.current = { messages: ordered, idx: 0, phase: "playing", tl: t, ml: t, streak: 0, mult: 1 };
@@ -230,7 +231,7 @@ export default function Inbox({ onBack, username, topPlayer, onLeaderboard }) {
         {/* ── MENU ── */}
         {phase === "menu" && (
           <div style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
-            <PixelDisplay color={C} text="INBOX" shape="triangle" style={{ marginBottom: 28 }} />
+            <PixelDisplay color={C} text="INBOX" shape="square" style={{ marginBottom: 28 }} />
             <div style={{ border: `1px solid ${C}`, padding: "16px 20px", marginBottom: 20, textAlign: "left" }}>
               <div style={{ fontSize: 10, letterSpacing: 4, marginBottom: 10 }}>─ BRIEFING ─</div>
               {[

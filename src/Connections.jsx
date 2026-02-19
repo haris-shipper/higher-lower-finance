@@ -181,7 +181,7 @@ export default function Connections({ onBack, username, topPlayer, onLeaderboard
         {/* ── MENU ── */}
         {phase === "menu" && (
           <div style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
-            <PixelDisplay color={C} text="CONNECTIONS" shape="dot" style={{ marginBottom: 28 }} />
+            <PixelDisplay color={C} text="CONNECTIONS" shape="square" style={{ marginBottom: 28 }} />
             <div style={{ border: `1px solid ${C}`, padding: "16px 20px", marginBottom: 20, textAlign: "left" }}>
               <div style={{ fontSize: 10, letterSpacing: 4, marginBottom: 10 }}>─ BRIEFING ─</div>
               {[

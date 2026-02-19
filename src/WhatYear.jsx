@@ -105,7 +105,7 @@ function YearSlider({ value, onChange, disabled }) {
   return (
     <div style={{ userSelect:"none", width:"100%" }}>
       <div ref={trackRef} onMouseDown={onMouseDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove}
-        style={{ position:"relative", height:32, cursor:disabled?"default":"pointer", padding:"14px 0" }}>
+        style={{ position:"relative", height:32, cursor:disabled?"default":"pointer", padding:"14px 0", touchAction:"none" }}>
         {/* Rail */}
         <div style={{ position:"absolute", top:14, left:0, right:0, height:3, background:`${C}20`, borderRadius:2 }} />
         {/* Fill */}
@@ -308,7 +308,7 @@ export default function WhatYear({ onBack, username, topPlayer, onLeaderboard })
       </div>
 
       <div style={{ display:"flex", justifyContent:"space-between", padding:"8px 20px", borderTop:`1px solid ${C}`, fontSize:9, letterSpacing:3, flexShrink:0 }}>
-        <span style={{ cursor:"pointer", opacity:0.6 }} onClick={onBack} onMouseEnter={e=>e.target.style.opacity=1} onMouseLeave={e=>e.target.style.opacity=0.6}>← HOME</span>
+        <span style={{ cursor:"pointer", opacity:0.6, transition:"opacity 0.15s" }} onClick={onBack} onMouseEnter={e=>e.target.style.opacity=1} onMouseLeave={e=>e.target.style.opacity=0.6}>← HOME</span>
         <span>WHAT YEAR? V1.0</span>
         <span>○ STANDBY</span>
       </div>
@@ -353,7 +353,7 @@ export default function WhatYear({ onBack, username, topPlayer, onLeaderboard })
         </div>
 
         <div style={{ display:"flex", justifyContent:"space-between", padding:"8px 20px", borderTop:`1px solid ${C}`, fontSize:9, letterSpacing:3, flexShrink:0 }}>
-          <span style={{ cursor:"pointer", opacity:0.6 }} onClick={onBack} onMouseEnter={e=>e.target.style.opacity=1} onMouseLeave={e=>e.target.style.opacity=0.6}>← HOME</span>
+          <span style={{ cursor:"pointer", opacity:0.6, transition:"opacity 0.15s" }} onClick={onBack} onMouseEnter={e=>e.target.style.opacity=1} onMouseLeave={e=>e.target.style.opacity=0.6}>← HOME</span>
           <span>WHAT YEAR? V1.0</span>
           <span>○ COMPLETE</span>
         </div>
@@ -550,7 +550,7 @@ export default function WhatYear({ onBack, username, topPlayer, onLeaderboard })
       </div>
 
       <div style={{ display:"flex", justifyContent:"space-between", padding:"8px 20px", borderTop:`1px solid ${C}`, fontSize:9, letterSpacing:3, flexShrink:0 }}>
-        <span style={{ cursor:"pointer", opacity:0.6 }} onClick={onBack} onMouseEnter={e=>e.target.style.opacity=1} onMouseLeave={e=>e.target.style.opacity=0.6}>← HOME</span>
+        <span style={{ cursor:"pointer", opacity:0.6, transition:"opacity 0.15s" }} onClick={onBack} onMouseEnter={e=>e.target.style.opacity=1} onMouseLeave={e=>e.target.style.opacity=0.6}>← HOME</span>
         <span>WHAT YEAR? V1.0</span>
         <span>{isReveal?"○ RESULT":"● ACTIVE"}</span>
       </div>

@@ -60,4 +60,19 @@ body {
 
   /* Impostor: compact sentence cards */
   .x-card    { padding: 14px 10px !important; min-height: 80px !important; font-size: 11px !important; }
+
+  /* Landing logo tap feedback */
+  .logo-hl, .logo-cn, .logo-ib, .logo-im, .logo-ds, .logo-fc, .logo-wy {
+    transition: opacity 0.1s, transform 0.1s;
+  }
+  .logo-hl:active, .logo-cn:active, .logo-ib:active, .logo-im:active,
+  .logo-ds:active, .logo-fc:active, .logo-wy:active {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+
+  /* Larger touch targets for game buttons */
+  .fb   { min-height: 56px !important; padding: 12px 6px !important; }
+  .c-tile { min-height: 56px !important; }
+  .i-btn  { min-height: 48px !important; padding: 12px 4px !important; }
 }

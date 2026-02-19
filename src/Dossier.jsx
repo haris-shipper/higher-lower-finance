@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import PixelDisplay from "./PixelDisplay.jsx";
 import { CARDS, CATEGORIES, SOURCES } from "./dossierData.js";
 
-const BG = "#1F1F1F";
+const BG = "#141413";
 const C  = "#BC34FB";
 
 function shuf(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
@@ -105,13 +105,13 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
     return (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
         <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
-          <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 0.7} onMouseLeave={e => e.target.style.opacity = 1}>SEE LEADERBOARD</span>
+          <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
           <span style={{ opacity: 0.25 }}>|</span>
           {[["STO","Europe/Stockholm"],["DUB","Europe/Dublin"],["NYC","America/New_York"]].map(([label, tz]) => (
             <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 0.7} onMouseLeave={e => e.currentTarget.style.opacity = 1}>QUARTR LABS GAME STUDIO</div>
+        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
         <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
           {topPlayer && (
             <>
@@ -135,7 +135,7 @@ export default function Dossier({ onBack, username, topPlayer, onLeaderboard }) 
   function BottomBar({ right }) {
     return (
       <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0 }}>
-        <span style={{ cursor: "pointer", transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 0.7} onMouseLeave={e => e.target.style.opacity = 1}>← HOME</span>
+        <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
         <span>DOSSIER V1.0</span>
         <span>{right}</span>
       </div>

@@ -3,9 +3,10 @@ import PixelDisplay from "./PixelDisplay.jsx";
 import { PEOPLE } from "./facesData.js";
 import { submitScore } from "./supabase.js";
 
-const BG  = "#1F1F1F";
+const BG  = "#141413";
 const C   = "#FF2C2F";
 const WIN = "#2DFF72";
+const ERR = "#FF2D2D";
 const TIMER_SECS = 10;
 
 const TIERS = [
@@ -282,13 +283,13 @@ export default function Faces({ onBack, username, topPlayer, onLeaderboard }) {
     return (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px", borderBottom: `1px solid ${C}`, flexShrink: 0, fontSize: 9, letterSpacing: 2 }}>
         <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-start", alignItems: "center" }}>
-          <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 0.7} onMouseLeave={e => e.target.style.opacity = 1}>SEE LEADERBOARD</span>
+          <span onClick={onLeaderboard} style={{ cursor: "pointer", letterSpacing: 3, opacity: 0.7, transition: "opacity 0.15s", flexShrink: 0 }} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.7}>SEE LEADERBOARD</span>
           <span style={{ opacity: 0.25 }}>|</span>
           {[["STO","Europe/Stockholm"],["DUB","Europe/Dublin"],["NYC","America/New_York"]].map(([label, tz]) => (
             <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ fontFeatureSettings: "'tnum'" }}>{getTZTime(tz)}</span></span>
           ))}
         </div>
-        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", transition: "opacity 0.15s", color: C }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 0.7} onMouseLeave={e => e.currentTarget.style.opacity = 1}>QUARTR LABS GAME STUDIO</div>
+        <div className="topbar-ctr" style={{ fontSize: 10, letterSpacing: 4, cursor: "pointer", opacity: 0.7, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.currentTarget.style.opacity = 1} onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>QUARTR LABS GAME STUDIO</div>
         <div className="mob-hide" style={{ display: "flex", gap: 12, flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
           {topPlayer && (
             <><span style={{ whiteSpace: "nowrap" }}>№1 <span style={{ fontWeight: 700 }}>{topPlayer}</span></span><span style={{ opacity: 0.25 }}>|</span></>
@@ -299,7 +300,7 @@ export default function Faces({ onBack, username, topPlayer, onLeaderboard }) {
             { label: "STO",    tz: "Europe/Stockholm", oh: 9,  om: 0,  ch: 17, cm: 30 },
           ].map(({ label, tz, oh, om, ch, cm }) => {
             const open = isMktOpen(tz, oh, om, ch, cm);
-            return <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ color: open ? WIN : C, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
+            return <span key={label} style={{ whiteSpace: "nowrap" }}>{label} <span style={{ color: open ? WIN : ERR, animation: open ? "pulse 1.5s ease-in-out infinite" : "none" }}>{open ? "OPEN" : "CLOSED"}</span></span>;
           })}
         </div>
       </div>
@@ -309,7 +310,7 @@ export default function Faces({ onBack, username, topPlayer, onLeaderboard }) {
   function BottomBar({ right }) {
     return (
       <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 20px", borderTop: `1px solid ${C}`, fontSize: 9, letterSpacing: 3, flexShrink: 0, color: C }}>
-        <span style={{ cursor: "pointer", transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 0.7} onMouseLeave={e => e.target.style.opacity = 1}>← HOME</span>
+        <span style={{ cursor: "pointer", opacity: 0.6, transition: "opacity 0.15s" }} onClick={onBack} onMouseEnter={e => e.target.style.opacity = 1} onMouseLeave={e => e.target.style.opacity = 0.6}>← HOME</span>
         <span>FACES V1.0</span>
         <span>{right}</span>
       </div>
@@ -338,7 +339,7 @@ export default function Faces({ onBack, username, topPlayer, onLeaderboard }) {
                 "Gets harder as you survive longer.",
               ].map((txt, i) => (
                 <div key={i} style={{ fontSize: 11, lineHeight: 2.2, display: "flex", gap: 10 }}>
-                  <span>{String(i + 1).padStart(2, "0")}</span><span>{txt}</span>
+                  <span style={{ opacity: 0.4 }}>{String(i + 1).padStart(2, "0")}</span><span>{txt}</span>
                 </div>
               ))}
             </div>

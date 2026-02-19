@@ -408,6 +408,38 @@ export const MESSAGES = [
     text: "We're a strategic communications firm. About half our clients are listed companies. For those, we do everything from press releases to analyst day prep and investor targeting.",
     signals: ["listed companies", "analyst day prep", "investor targeting"],
     explanation: "A comms firm running analyst days and investor targeting for listed companies is doing outsourced IR — same needs as an in-house team." },
+
+  // ─── RETAIL — Obvious not-ICP ─────────────────────────────────────────────
+
+  { id: 86, tier: 1, bucket: "not-icp",
+    text: "I've got about €15k in a Robinhood account. I mostly buy dips on tech stocks and hold. Looking for something to help me pick better entries.",
+    signals: ["Robinhood", "buy dips", "pick better entries"],
+    explanation: "Retail investors managing personal savings on consumer trading apps aren't Quartr's ICP — the platform is built for institutional research workflows." },
+
+  { id: 87, tier: 1, bucket: "not-icp",
+    text: "I follow a few dividend investing YouTubers and I'm building a passive income portfolio. Mostly ETFs and blue chips.",
+    signals: ["YouTubers", "passive income portfolio", "blue chips"],
+    explanation: "Retail investors following social media influencers for investment tips are not Quartr's ICP — the product is designed for professional institutional users." },
+
+  { id: 88, tier: 1, bucket: "not-icp",
+    text: "I'm a 26-year-old software engineer. I invest my savings in index funds and a few individual stocks. Just trying to learn more about the companies I own.",
+    signals: ["invest my savings", "individual stocks", "learn more about"],
+    explanation: "Individual retail investors managing personal savings aren't Quartr's core ICP — the platform targets institutional buy-side and sell-side professionals." },
+
+  { id: 89, tier: 1, bucket: "not-icp",
+    text: "I trade US options on my lunch break. Mostly earnings plays — I want to know what analysts expect before the print.",
+    signals: ["options on my lunch break", "earnings plays"],
+    explanation: "Retail options traders making personal bets around earnings aren't Quartr's ICP — the platform is for institutional equity research, not short-term personal speculation." },
+
+  { id: 90, tier: 1, bucket: "not-icp",
+    text: "I run a stock picks newsletter. About 2,000 subscribers, all retail. I cover mostly US growth stocks and share my personal portfolio moves.",
+    signals: ["personal portfolio", "retail", "stock picks newsletter"],
+    explanation: "A retail-focused personal newsletter isn't Quartr's ICP — subscribers are individuals, not institutional research teams or listed companies." },
+
+  { id: 91, tier: 1, bucket: "not-icp",
+    text: "I'm retired. I manage my own pension pot — mostly dividend stocks and some REITs. I like to listen to earnings calls to stay on top of things.",
+    signals: ["my own pension pot", "retired", "dividend stocks"],
+    explanation: "A retired individual managing personal savings is a retail investor, not an institutional user — Quartr is built for professional research workflows." },
 ];
 
 export const TIER_TIME = { 1: 15, 2: 12, 3: 10, 4: 8, 5: 6 };

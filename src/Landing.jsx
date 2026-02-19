@@ -87,15 +87,15 @@ export default function Landing({ onPlay, username }) {
         </div>
 
         <div className="logo-cn" style={{ maxWidth: 355, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("connections")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("connections")}>
-          <PixelDisplay color="#2DDEA0" isHovered={hovered === "connections"} text="CONNECTIONS" shape="dot" />
+          <PixelDisplay color="#2DDEA0" isHovered={hovered === "connections"} text="CONNECTIONS" shape="square" />
         </div>
 
         <div className="logo-ib" style={{ maxWidth: 159, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("inbox")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("inbox")}>
-          <PixelDisplay color="#EC49D3" isHovered={hovered === "inbox"} text="INBOX" shape="triangle" />
+          <PixelDisplay color="#EC49D3" isHovered={hovered === "inbox"} text="INBOX" shape="square" />
         </div>
 
         <div className="logo-im" style={{ maxWidth: 257, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("impostor")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("impostor")}>
-          <PixelDisplay color="#48D7FF" isHovered={hovered === "impostor"} text="IMPOSTOR" shape="decagon" />
+          <PixelDisplay color="#48D7FF" isHovered={hovered === "impostor"} text="IMPOSTOR" shape="square" />
         </div>
 
         <div className="logo-ds" style={{ maxWidth: 224, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("dossier")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("dossier")}>

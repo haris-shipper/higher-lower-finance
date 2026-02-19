@@ -169,7 +169,7 @@ export default function Impostor({ onBack, username, topPlayer, onLeaderboard })
 
         <div className="scroll-main" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 16px" }}>
           <div style={{ maxWidth: 460, width: "100%", textAlign: "center" }}>
-            <PixelDisplay color={C} text="IMPOSTOR" shape="decagon" style={{ marginBottom: 28 }} />
+            <PixelDisplay color={C} text="IMPOSTOR" shape="square" style={{ marginBottom: 28 }} />
             <div style={{ border: `1px solid ${C}`, padding: "16px 20px", marginBottom: 20, textAlign: "left" }}>
               <div style={{ fontSize: 10, letterSpacing: 4, marginBottom: 10 }}>─ BRIEFING ─</div>
               {[

@@ -1,45 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- 6x6 random black/white grid -->
-  <!-- Row 0 -->
-  <rect x="0.2" y="0.2" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="5.4" y="0.2" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="10.6" y="0.2" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="15.8" y="0.2" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="21.0" y="0.2" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="26.2" y="0.2" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <!-- Row 1 -->
-  <rect x="0.2" y="5.4" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="5.4" y="5.4" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="10.6" y="5.4" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="15.8" y="5.4" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="21.0" y="5.4" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="26.2" y="5.4" width="4.6" height="4.6" fill="#141413"/>
-  <!-- Row 2 -->
-  <rect x="0.2" y="10.6" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="5.4" y="10.6" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="10.6" y="10.6" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="15.8" y="10.6" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="21.0" y="10.6" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="26.2" y="10.6" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <!-- Row 3 -->
-  <rect x="0.2" y="15.8" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="5.4" y="15.8" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="10.6" y="15.8" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="15.8" y="15.8" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="21.0" y="15.8" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="26.2" y="15.8" width="4.6" height="4.6" fill="#141413"/>
-  <!-- Row 4 -->
-  <rect x="0.2" y="21.0" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="5.4" y="21.0" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="10.6" y="21.0" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="15.8" y="21.0" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="21.0" y="21.0" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="26.2" y="21.0" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <!-- Row 5 -->
-  <rect x="0.2" y="26.2" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="5.4" y="26.2" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="10.6" y="26.2" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="15.8" y="26.2" width="4.6" height="4.6" fill="#141413"/>
-  <rect x="21.0" y="26.2" width="4.6" height="4.6" fill="#FBFBFB"/>
-  <rect x="26.2" y="26.2" width="4.6" height="4.6" fill="#141413"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+  <rect width="36" height="36" fill="#141413"/>
+  <!-- Q — 5×7 pixel grid, PS=4 PG=1, centered in 36×36 (xOff=6, yOff=1) -->
+  <!-- Row 0: · ■ ■ ■ · -->
+  <rect x="11" y="1"  width="4" height="4" fill="#FBFBFB"/>
+  <rect x="16" y="1"  width="4" height="4" fill="#FBFBFB"/>
+  <rect x="21" y="1"  width="4" height="4" fill="#FBFBFB"/>
+  <!-- Row 1: ■ · · · ■ -->
+  <rect x="6"  y="6"  width="4" height="4" fill="#FBFBFB"/>
+  <rect x="26" y="6"  width="4" height="4" fill="#FBFBFB"/>
+  <!-- Row 2: ■ · · · ■ -->
+  <rect x="6"  y="11" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="26" y="11" width="4" height="4" fill="#FBFBFB"/>
+  <!-- Row 3: ■ · · · ■ -->
+  <rect x="6"  y="16" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="26" y="16" width="4" height="4" fill="#FBFBFB"/>
+  <!-- Row 4: ■ · · · ■ -->
+  <rect x="6"  y="21" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="26" y="21" width="4" height="4" fill="#FBFBFB"/>
+  <!-- Row 5: ■ · · ■ ■  (tail starts) -->
+  <rect x="6"  y="26" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="21" y="26" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="26" y="26" width="4" height="4" fill="#FBFBFB"/>
+  <!-- Row 6: · ■ ■ ■ ■  (bottom arc + tail extends) -->
+  <rect x="11" y="31" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="16" y="31" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="21" y="31" width="4" height="4" fill="#FBFBFB"/>
+  <rect x="26" y="31" width="4" height="4" fill="#FBFBFB"/>
 </svg>

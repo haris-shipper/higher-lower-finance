@@ -76,11 +76,6 @@ export const MESSAGES = [
     signals: ["embed", "earnings call", "for our users"],
     explanation: "Platforms embedding earnings content into their own product need API access, not direct user seats." },
 
-  { id: 15, tier: 1, bucket: "not-icp",
-    text: "I'm an independent financial advisor managing portfolios for 45 private clients. AUM around €80M.",
-    signals: ["financial advisor", "private clients"],
-    explanation: "Independent advisors serving retail clients aren't in Quartr's core ICP — the platform is optimised for institutional research workflows." },
-
   // ─── TIER 2 — Clearer with context (12s) ─────────────────────────────────
 
   { id: 16, tier: 2, bucket: "buy-side",
@@ -102,11 +97,6 @@ export const MESSAGES = [
     text: "We're building a Bloomberg Terminal alternative for institutional investors in emerging markets. Earnings call data is one of our key modules.",
     signals: ["Bloomberg Terminal alternative", "earnings call data"],
     explanation: "Companies building financial terminals for institutions need data infrastructure — an API relationship is the right fit." },
-
-  { id: 20, tier: 2, bucket: "not-icp",
-    text: "We run a retail investment app. 200,000 users tracking their stock portfolios and learning about investing.",
-    signals: ["retail investment app", "200,000 users"],
-    explanation: "Consumer apps for retail investors aren't Quartr's target — the platform is built for institutional research workflows." },
 
   { id: 21, tier: 2, bucket: "buy-side",
     text: "We're a systematic long/short equity fund based in Stockholm. AUM around €800M. We run quantitative signals but our PMs still review earnings content.",
@@ -172,11 +162,6 @@ export const MESSAGES = [
     text: "We're an AI research startup building a tool that summarises earnings calls for sell-side analysts. We need audio and transcript feeds.",
     signals: ["AI", "summarises earnings calls", "transcript feeds"],
     explanation: "AI tools processing earnings calls for analysts need API access to audio and transcript data at scale." },
-
-  { id: 34, tier: 2, bucket: "not-icp",
-    text: "We're a fintech lending platform. We assess creditworthiness of corporate borrowers using alternative data.",
-    signals: ["lending platform", "creditworthiness", "corporate borrowers"],
-    explanation: "Credit lending platforms using alternative data for loan decisions don't use earnings call research as a core tool." },
 
   { id: 35, tier: 2, bucket: "sell-side",
     text: "We're a boutique M&A advisory firm. We also publish sector research to differentiate with our 200 institutional advisory clients.",
@@ -255,11 +240,6 @@ export const MESSAGES = [
     signals: ["alternative data platform", "earnings call audio", "feed"],
     explanation: "Alternative data platforms serving quant investors need programmatic access to earnings call feeds." },
 
-  { id: 50, tier: 3, bucket: "not-icp",
-    text: "We're a sovereign debt advisory firm. We advise Nordic governments and municipalities on bond issuance strategy.",
-    signals: ["sovereign debt advisory", "bond issuance"],
-    explanation: "Sovereign debt advisors work with governments on public borrowing — not a public equity research workflow." },
-
   { id: 51, tier: 3, bucket: "buy-side",
     text: "We're an insurance company. Our internal investment team manages €8B in listed equities and corporate bonds.",
     signals: ["insurance company", "internal investment team", "listed equities"],
@@ -291,11 +271,6 @@ export const MESSAGES = [
     text: "We build compliance and surveillance tools for financial regulators. We want to ingest earnings call transcripts for disclosure monitoring.",
     signals: ["compliance tools", "financial regulators", "transcripts for disclosure monitoring"],
     explanation: "Regulatory tech platforms processing earnings transcripts for surveillance and compliance need API access." },
-
-  { id: 57, tier: 4, bucket: "not-icp",
-    text: "We're a credit hedge fund. We trade corporate bonds and CDS, with no equity exposure in the book.",
-    signals: ["credit hedge fund", "corporate bonds and CDS", "no equity exposure"],
-    explanation: "Credit-only funds that don't hold equities have limited use for equity earnings research — wrong product fit." },
 
   { id: 58, tier: 4, bucket: "buy-side",
     text: "We manage a registered UCITS fund distributed across Europe. Fundamental long-only equity strategy, €600M AUM.",
@@ -368,11 +343,6 @@ export const MESSAGES = [
     text: "We build software specifically for IR teams at listed companies. We'd want to pull Quartr's analytics data directly into our IR management platform.",
     signals: ["software for IR teams", "pull Quartr's analytics", "IR management platform"],
     explanation: "Software companies building IR platforms need API access to embed earnings analytics — not IR team seats themselves." },
-
-  { id: 72, tier: 5, bucket: "not-icp",
-    text: "We're a retail trading platform with 500,000 users. Our users trade equities but we don't provide institutional-grade research or content.",
-    signals: ["retail trading platform", "500,000 users"],
-    explanation: "Retail trading platforms for individual investors aren't Quartr's ICP — the product is built for institutional research workflows." },
 
   { id: 73, tier: 5, bucket: "buy-side",
     text: "We're a GARP fund. We go deep on fundamentals before every position — quality earnings call analysis is central to how we form conviction.",

@@ -44,8 +44,7 @@ export default function Leaderboard({ onBack, username, topPlayer }) {
     if (tabKey === "overall") {
       return Object.entries(overall)
         .map(([user, score]) => ({ username: user, score }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 10);
+        .sort((a, b) => b.score - a.score);
     }
     const gameData = byGame[tabKey] || {};
     return Object.entries(gameData)

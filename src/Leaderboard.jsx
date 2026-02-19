@@ -13,6 +13,7 @@ const GAMES = [
   { key: "inbox",       label: "INBOX"            },
   { key: "impostor",    label: "IMPOSTOR"         },
   { key: "faces",       label: "FACES"            },
+  { key: "whyear",     label: "WHAT YEAR?"       },
 ];
 
 const getTZTime = (tz) => new Date().toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });

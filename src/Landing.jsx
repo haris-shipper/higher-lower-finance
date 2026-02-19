@@ -106,6 +106,10 @@ export default function Landing({ onPlay, username }) {
           <PixelDisplay color="#FF2C2F" isHovered={hovered === "faces"} text="FACES" shape="square" />
         </div>
 
+        <div className="logo-wy" style={{ maxWidth: 323, width: "100%", cursor: "pointer", margin: "0 auto" }} onMouseEnter={() => setHovered("whyear")} onMouseLeave={() => setHovered(null)} onClick={() => onPlay("whyear")}>
+          <PixelDisplay color="#E1D41B" isHovered={hovered === "whyear"} text="WHAT YEAR?" shape="square" />
+        </div>
+
       </div>
 
       {/* BOTTOM BAR */}

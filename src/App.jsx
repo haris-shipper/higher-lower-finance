@@ -7,6 +7,7 @@ import Inbox from "./Inbox.jsx";
 import Impostor from "./Impostor.jsx";
 import Dossier from "./Dossier.jsx";
 import Faces from "./Faces.jsx";
+import WhatYear from "./WhatYear.jsx";
 import Leaderboard from "./Leaderboard.jsx";
 import { fetchAllScores, topOverallPlayer } from "./supabase.js";
 
@@ -70,6 +71,7 @@ export default function App() {
   if (view === "impostor")     return <Impostor    onBack={goLanding} username={username} {...sharedProps} />;
   if (view === "dossier")      return <Dossier     onBack={goLanding} username={username} {...sharedProps} />;
   if (view === "faces")        return <Faces       onBack={goLanding} username={username} {...sharedProps} />;
+  if (view === "whyear")       return <WhatYear    onBack={goLanding} username={username} {...sharedProps} />;
   if (view === "leaderboard")  return <Leaderboard onBack={goLanding} username={username} topPlayer={topPlayer} />;
   return <Landing onPlay={(game) => navigate(game)} username={username} />;
 }

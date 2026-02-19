@@ -66,7 +66,7 @@ export const PEOPLE = [
   // ── TIER 5 ── Finance / industry well-known ──────────────────────────────
   { id: 54, name: "Charlie Munger",       firm: "Berkshire Hathaway",          bio: "Warren Buffett's partner for 60 years. Shaped Berkshire's philosophy of buying quality businesses.", wiki: "Charlie_Munger",           tier: 5 },
   { id: 55, name: "John Bogle",           firm: "Vanguard",                    bio: "Founded Vanguard and invented the index fund. Changed investing forever.",            wiki: "John_Bogle",                        tier: 5 },
-  { id: 56, name: "Chuck Schwab",         firm: "Charles Schwab",              bio: "Democratized stock brokerage with the discount broker model.",                       wiki: "Charles_R._Schwab",                 tier: 5 },
+  { id: 56, name: "Steve Ballmer",         firm: "Microsoft",                   bio: "Microsoft's CEO from 2000–2014. Grew revenue from $25B to $87B during his tenure.", wiki: "Steve_Ballmer",                     tier: 5 },
   { id: 57, name: "Mark Mobius",          firm: "Mobius Capital Partners",     bio: "Pioneer of emerging market investing for three decades at Franklin Templeton.",      wiki: "Mark_Mobius",                       tier: 5 },
   { id: 58, name: "Michael Lewis",        firm: "Author",                      bio: "Wrote Liar's Poker, The Big Short, and Flash Boys. Finance's greatest storyteller.", wiki: "Michael_Lewis_(author)",            tier: 5 },
   { id: 59, name: "Nassim Taleb",         firm: "Universa Investments",        bio: "Philosopher-trader. Wrote The Black Swan. Profited from the 2008 crash.",            wiki: "Nassim_Nicholas_Taleb",             tier: 5 },
@@ -110,7 +110,7 @@ export const PEOPLE = [
   { id: 95, name: "Nicolai Tangen",       firm: "Norges Bank Investment Mgmt", bio: "Manages Norway's $1.7T sovereign wealth fund, the world's largest.",              wiki: "Nicolai_Tangen",                    tier: 6 },
   { id: 96, name: "Prem Watsa",           firm: "Fairfax Financial",           bio: "Canada's Warren Buffett. Runs Fairfax Financial Holdings.",                        wiki: "Prem_Watsa",                        tier: 6 },
   { id: 97, name: "Scott Bessent",        firm: "Key Square / US Treasury",    bio: "Former Soros CIO turned macro fund manager. Current US Treasury Secretary.",       wiki: "Scott_Bessent",                     tier: 6 },
-  { id: 98, name: "Michael Arougheti",    firm: "Ares Management",             bio: "Co-founded Ares Management, a leading alternative credit and PE manager.",         wiki: "Michael_Arougheti",                 tier: 6 },
+  { id: 98, name: "Sundar Pichai",         firm: "Google / Alphabet",           bio: "CEO of both Google and Alphabet. Led Google's pivot to AI-first products.",        wiki: "Sundar_Pichai",                     tier: 6 },
   { id: 99, name: "Anthony Scaramucci",   firm: "SkyBridge Capital",           bio: "Founder of SkyBridge Capital. Known for his brief White House stint and media presence.", wiki: "Anthony_Scaramucci",             tier: 6 },
   { id: 100, name: "Tom Barrack",         firm: "Colony Capital",              bio: "Founder of Colony Capital. Real estate PE pioneer and former Trump advisor.",      wiki: "Tom_Barrack",                       tier: 6 },
 ];

@@ -189,8 +189,13 @@ export default function Intro({ onComplete }) {
       {phase === "prompt" && (
         <div style={{ textAlign: "center", animation: "phaseIn 0.15s ease" }}>
           {/* Prompt label */}
-          <div style={{ fontSize: 9, letterSpacing: 5, color: DIM, marginBottom: 36 }}>
+          <div style={{ fontSize: 9, letterSpacing: 5, color: DIM, marginBottom: 16 }}>
             {applyGlitch(mainText)}
+          </div>
+
+          {/* Leaderboard note */}
+          <div style={{ fontSize: 8, letterSpacing: 3, color: DIM, opacity: 0.6, marginBottom: 28 }}>
+            YOUR USERNAME WILL APPEAR ON THE LEADERBOARD — DO YOUR BEST.
           </div>
 
           {/* Name input display */}

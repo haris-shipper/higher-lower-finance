@@ -12,11 +12,11 @@ const HDR  = () => ({
 export const supabaseConfigured = () => Boolean(URL && KEY);
 
 export async function submitScore(username, game, score) {
-  if (!supabaseConfigured() || !username || score <= 0) return;
+  if (!username || score <= 0) return;
   try {
-    await fetch(`${URL}/rest/v1/scores`, {
+    await fetch("/api/submit-score", {
       method: "POST",
-      headers: { ...HDR(), "Prefer": "return=minimal" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, game, score }),
     });
   } catch (_) { /* silent — never break the game */ }
